@@ -1,0 +1,99 @@
+{
+  "dataset": "GTSRB (Kaggle), data/Train + data/Test",
+  "n_classes": 43,
+  "input_size_px": 64,
+  "train_folder": {
+    "images": 39209,
+    "tracks": 1307,
+    "frames_per_track": {
+      "min": 29,
+      "median": 30,
+      "max": 30
+    },
+    "images_per_class": {
+      "min": 210,
+      "min_class": 0,
+      "max": 2250,
+      "max_class": 2
+    },
+    "tracks_per_class": {
+      "min": 7,
+      "max": 75
+    },
+    "imbalance_ratio_max_min": 10.71
+  },
+  "split": {
+    "file": "splits/val_tracks.json",
+    "method": "StratifiedGroupKFold(n_splits=5, shuffle=True, random_state=42), groups = track",
+    "n_images": {
+      "train": 31349,
+      "val": 7860
+    },
+    "n_tracks": {
+      "train": 1045,
+      "val": 262
+    },
+    "val_fraction_tracks": 0.2005,
+    "val_fraction_images": 0.2005,
+    "shared_tracks": 0,
+    "val_classes": 43,
+    "val_min_images_per_class": 30,
+    "val_min_images_class": 0,
+    "val_min_tracks_per_class": 1,
+    "max_class_share_diff_train_val_pp": 0.384
+  },
+  "test": {
+    "images": 12630,
+    "images_per_class": {
+      "min": 60,
+      "max": 750
+    }
+  },
+  "image_size_px": {
+    "train_folder": {
+      "width": {
+        "min": 25,
+        "median": 43.0,
+        "max": 243
+      },
+      "height": {
+        "min": 25,
+        "median": 43.0,
+        "max": 225
+      },
+      "share_both_sides_below_64": 0.7927,
+      "aspect_w_h": {
+        "p1": 0.811,
+        "median": 1.0,
+        "p99": 1.174
+      }
+    },
+    "test": {
+      "width": {
+        "min": 25,
+        "median": 43.0,
+        "max": 266
+      },
+      "height": {
+        "min": 25,
+        "median": 43.0,
+        "max": 232
+      },
+      "share_both_sides_below_64": 0.7947,
+      "aspect_w_h": {
+        "p1": 0.643,
+        "median": 1.0,
+        "p99": 1.172
+      }
+    }
+  },
+  "brightness_train_folder": {
+    "scale": "mean luminance 0-255",
+    "p1": 12.1,
+    "p5": 19.3,
+    "median": 74.3,
+    "p95": 172.4,
+    "share_below_30": 0.1434,
+    "share_below_50": 0.3032
+  }
+}

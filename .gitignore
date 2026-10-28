@@ -1,0 +1,27 @@
+# --- Dane i wagi modeli (nie do repo) ---
+data/
+*.pt
+*.pth
+*.ckpt
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+
+# --- Jupyter ---
+.ipynb_checkpoints/
+
+# --- IDE / system ---
+.vscode/
+.idea/
+Thumbs.db
+.DS_Store
+desktop.ini
+
+# --- Gradio ---
+.gradio/
+flagged/

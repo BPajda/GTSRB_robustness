@@ -1,0 +1,28 @@
+# Python 3.12
+#
+# Install PyTorch FIRST from the index matching your hardware (see README.md):
+#   CUDA (used in this project, driver >= CUDA 13.2):
+#     pip install torch==2.14.1 torchvision==0.29.1 --index-url https://download.pytorch.org/whl/cu132
+#   CPU only:
+#     pip install torch==2.14.1 torchvision==0.29.1 --index-url https://download.pytorch.org/whl/cpu
+# then:
+#   pip install -r requirements.txt
+# The pins below match both builds (local version labels like +cu132 are ignored).
+
+torch==2.14.1
+torchvision==0.29.1
+
+numpy==2.5.2
+pandas==3.1.0
+scikit-learn==1.9.1
+matplotlib==3.11.2
+seaborn==0.13.2
+pyyaml==6.0.3
+tqdm==4.70.1
+pillow==12.3.0
+grad-cam==1.5.7
+gradio==6.30.0
+
+jupyter==1.1.1
+ipykernel==7.4.0
+nbconvert==7.17.2
