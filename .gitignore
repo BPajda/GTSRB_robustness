@@ -25,3 +25,6 @@ desktop.ini
 # --- Gradio ---
 .gradio/
 flagged/
+
+# --- Smoke tests (throwaway results of --smoke) ---
+results/_smoke/

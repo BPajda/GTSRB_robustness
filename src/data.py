@@ -8,6 +8,8 @@ Run as a module to create the validation split once and check it:
 from __future__ import annotations
 
 import argparse
+import copy
+import functools
 import json
 import random
 from concurrent.futures import ThreadPoolExecutor
@@ -294,6 +296,48 @@ class GTSRBDataset(Dataset):
         img = self.cache[idx] if self.cache is not None else self.load_image(idx)
         x = self.transform(img).as_subclass(torch.Tensor)
         return x, int(self.labels[idx]), torch.from_numpy(self.rois[idx])
+
+    def image_uint8(self, idx: int) -> torch.Tensor:
+        """The resized image before any augmentation: uint8 [3, 64, 64]."""
+        if self.cache is not None:
+            return self.cache[idx]
+        resize = v2.Compose([v2.ToImage(), v2.Resize((IMG_SIZE, IMG_SIZE), antialias=True)])
+        return resize(self.load_image(idx)).as_subclass(torch.Tensor)
+
+    def with_transform(self, transform: v2.Compose) -> "GTSRBDataset":
+        """Shallow copy with another transform; the image cache is shared, not copied."""
+        ds = copy.copy(self)
+        ds.transform = transform
+        return ds
+
+
+SPLITS = ("train", "val", "test")
+
+
+def stratified_subset(df: pd.DataFrame, n: int, seed: int = SEED) -> pd.DataFrame:
+    """About n rows sampled per class in proportion to class size (smoke tests)."""
+    frac = min(1.0, n / len(df))
+    sub = df.groupby("ClassId", group_keys=False).sample(frac=frac, random_state=seed)
+    return sub.sort_index().reset_index(drop=True)
+
+
+@functools.lru_cache(maxsize=None)
+def cached_dataset(split: str, n: int | None = None, seed: int = SEED) -> GTSRBDataset:
+    """GTSRBDataset(cache=True) with the A0 transform for 'train', 'val' or 'test', decoded once per process.
+
+    n: optional stratified subset of about n images (smoke tests). Use with_transform()
+    for augmentation, so that several runs in one process share the decoded images.
+    """
+    if split not in SPLITS:
+        raise ValueError(f"split must be one of {SPLITS}, got {split!r}")
+    if split == "test":
+        df = load_csv("test")
+    else:
+        train_df, val_df = get_train_val()
+        df = train_df if split == "train" else val_df
+    if n is not None:
+        df = stratified_subset(df, n, seed)
+    return GTSRBDataset(df, transform=build_transform("A0"), cache=True)
 
 
 def seed_everything(seed: int = SEED) -> None:

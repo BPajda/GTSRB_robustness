@@ -57,6 +57,18 @@ Augmentacje (`src/data.py`):
 Zakłócenia do ewaluacji (`src/corruptions.py`), 3 poziomy nasilenia (1 = słabe, 2 = średnie, 3 = silne):
 `gaussian_blur`, `gaussian_noise`, `darken`, `occlusion`, `jpeg`. **JPEG nigdy nie występuje w augmentacji treningowej** (test uogólnienia, hipoteza H4).
 
+Dokładne parametry poziomów (ustalone w KM1, nie zmieniać bez uzgodnienia):
+
+| typ | poziom 1 | poziom 2 | poziom 3 |
+| --- | --- | --- | --- |
+| gaussian_blur (sigma) | 0.8 | 2.0 | 3.0 |
+| gaussian_noise (sigma, obraz w [0,1]) | 0.03 | 0.06 | 0.10 |
+| darken (mnożnik jasności) | 0.6 | 0.4 | 0.25 |
+| occlusion (czarny prostokąt, % pola ROI, losowa pozycja wewnątrz ROI) | 10% | 20% | 30% |
+| jpeg (quality) | 30 | 15 | 8 |
+
+Pełny plan i uzasadnienia: `docs/plan_projektu.md`, `docs/KM1_sprawozdanie.md`.
+
 Etapy:
 - **E1**: simple_cnn + 4 warianty (resnet18/mobilenet × scratch/pretrained), wszystkie A0 → 5 runów
 - **E2**: simple_cnn + najlepszy resnet18 + najlepszy mobilenet z E1, każdy z A1 i A2 → 6 runów
@@ -111,4 +123,12 @@ GTSRB_robustness/
 - Kod, nazwy i komentarze w kodzie po angielsku. Sprawozdania i README po polsku.
 - Zanim użytkownik puści pełny trening: każdy skrypt sprawdzony szybkim testem (1 epoka, mały podzbiór, flaga `--smoke`).
 - Długich treningów nie uruchamiaj sam bez prośby – podaj gotowe polecenie.
-- Małe, opisowe commity. Po każdym etapie krótko podsumuj, co powstało i jak to uruchomić.
+- Po każdym etapie krótko podsumuj, co powstało i jak to uruchomić.
+
+## Git – WAŻNE
+
+- **Nigdy nie wykonuj `git commit`, `git push`, `git reset`, `git rebase` ani innych poleceń zmieniających historię.** Commity robi wyłącznie użytkownik.
+- Możesz używać tylko poleceń do odczytu: `git status`, `git diff`, `git log`.
+- Na koniec zadania zaproponuj podział zmian na commity: które pliki do którego commita i gotowy komunikat.
+- Konwencja komunikatów: Conventional Commits, po angielsku, tryb rozkazujący, bez kropki na końcu, do ~72 znaków, np. `feat(data): add track-based train/val split`. Typy: `feat`, `fix`, `refactor`, `docs`, `chore`, `build`, `test`, `exp` (wyniki eksperymentów).
+- Nie dodawaj do komunikatów stopek typu `Co-Authored-By` ani podpisów.
