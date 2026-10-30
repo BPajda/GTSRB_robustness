@@ -1,0 +1,37 @@
+run,model,condition,condition_pl,corruption,level,subset,n,n_empty_cam,energy_in_roi_mean,energy_in_roi_median,roi_area_mean,lift_mean,lift_median,occluder_in_roi,occluder_energy_mean,occluder_energy_median,occluder_area_mean,occluder_lift_median
+resnet18_pretrained_A2,ResNet18 · ImageNet · A2 (finalny),clean,czyste,none,0,all,12630,0,0.88093,0.8923,0.56034,1.61131,1.5772,False,,,,
+resnet18_pretrained_A2,ResNet18 · ImageNet · A2 (finalny),clean,czyste,none,0,correct,12521,0,0.88123,0.8924,0.56055,1.61118,1.57704,False,,,,
+resnet18_pretrained_A2,ResNet18 · ImageNet · A2 (finalny),clean,czyste,none,0,wrong,109,0,0.84689,0.86522,0.53687,1.62611,1.64222,False,,,,
+resnet18_pretrained_A2,ResNet18 · ImageNet · A2 (finalny),gaussian_blur_2,"Rozmycie Gaussa, poziom 2 (σ = 2,0)",gaussian_blur,2,all,12630,0,0.88481,0.89644,0.56034,1.61899,1.58216,False,,,,
+resnet18_pretrained_A2,ResNet18 · ImageNet · A2 (finalny),gaussian_blur_2,"Rozmycie Gaussa, poziom 2 (σ = 2,0)",gaussian_blur,2,correct,12234,0,0.88621,0.89755,0.56208,1.61624,1.57814,False,,,,
+resnet18_pretrained_A2,ResNet18 · ImageNet · A2 (finalny),gaussian_blur_2,"Rozmycie Gaussa, poziom 2 (σ = 2,0)",gaussian_blur,2,wrong,396,0,0.84149,0.85444,0.50677,1.70406,1.70223,False,,,,
+resnet18_pretrained_A2,ResNet18 · ImageNet · A2 (finalny),gaussian_noise_2,"Szum Gaussa, poziom 2 (σ = 0,06)",gaussian_noise,2,all,12630,0,0.88396,0.89573,0.56034,1.61742,1.5812,False,,,,
+resnet18_pretrained_A2,ResNet18 · ImageNet · A2 (finalny),gaussian_noise_2,"Szum Gaussa, poziom 2 (σ = 0,06)",gaussian_noise,2,correct,12333,0,0.88421,0.89579,0.56092,1.61607,1.57976,False,,,,
+resnet18_pretrained_A2,ResNet18 · ImageNet · A2 (finalny),gaussian_noise_2,"Szum Gaussa, poziom 2 (σ = 0,06)",gaussian_noise,2,wrong,297,0,0.87358,0.89325,0.53628,1.67363,1.65214,False,,,,
+resnet18_pretrained_A2,ResNet18 · ImageNet · A2 (finalny),darken_2,"Przyciemnienie, poziom 2 (×0,4)",darken,2,all,12630,0,0.88869,0.89954,0.56034,1.62608,1.59141,False,,,,
+resnet18_pretrained_A2,ResNet18 · ImageNet · A2 (finalny),darken_2,"Przyciemnienie, poziom 2 (×0,4)",darken,2,correct,12376,0,0.88909,0.9001,0.56098,1.62494,1.5902,False,,,,
+resnet18_pretrained_A2,ResNet18 · ImageNet · A2 (finalny),darken_2,"Przyciemnienie, poziom 2 (×0,4)",darken,2,wrong,254,0,0.86917,0.87786,0.52912,1.68158,1.66035,False,,,,
+resnet18_pretrained_A2,ResNet18 · ImageNet · A2 (finalny),occlusion_2,"Zasłonięcie ROI, poziom 2 (20% ROI)",occlusion,2,all,12630,0,0.87309,0.88654,0.56034,1.59608,1.55966,True,0.21858,0.21612,0.11226,1.97648
+resnet18_pretrained_A2,ResNet18 · ImageNet · A2 (finalny),occlusion_2,"Zasłonięcie ROI, poziom 2 (20% ROI)",occlusion,2,correct,10848,0,0.87698,0.88903,0.56268,1.5965,1.55945,True,0.21428,0.21188,0.11268,1.92568
+resnet18_pretrained_A2,ResNet18 · ImageNet · A2 (finalny),occlusion_2,"Zasłonięcie ROI, poziom 2 (20% ROI)",occlusion,2,wrong,1782,0,0.84943,0.86271,0.54613,1.5935,1.56406,True,0.24478,0.24249,0.10972,2.24284
+resnet18_pretrained_A2,ResNet18 · ImageNet · A2 (finalny),jpeg_2,"Kompresja JPEG, poziom 2 (jakość 15)",jpeg,2,all,12630,0,0.88616,0.89843,0.56034,1.62134,1.58219,False,,,,
+resnet18_pretrained_A2,ResNet18 · ImageNet · A2 (finalny),jpeg_2,"Kompresja JPEG, poziom 2 (jakość 15)",jpeg,2,correct,11825,0,0.88742,0.89872,0.5621,1.6185,1.57863,False,,,,
+resnet18_pretrained_A2,ResNet18 · ImageNet · A2 (finalny),jpeg_2,"Kompresja JPEG, poziom 2 (jakość 15)",jpeg,2,wrong,805,0,0.86766,0.89046,0.53447,1.66304,1.63412,False,,,,
+simple_cnn_scratch_A0,SimpleCNN · od zera · A0 (baseline),clean,czyste,none,0,all,12630,0,0.95438,0.96668,0.56034,1.75708,1.6914,False,,,,
+simple_cnn_scratch_A0,SimpleCNN · od zera · A0 (baseline),clean,czyste,none,0,correct,12214,0,0.9576,0.96741,0.5614,1.75978,1.69349,False,,,,
+simple_cnn_scratch_A0,SimpleCNN · od zera · A0 (baseline),clean,czyste,none,0,wrong,416,0,0.85988,0.89562,0.52922,1.67776,1.60866,False,,,,
+simple_cnn_scratch_A0,SimpleCNN · od zera · A0 (baseline),gaussian_blur_2,"Rozmycie Gaussa, poziom 2 (σ = 2,0)",gaussian_blur,2,all,12630,0,0.93638,0.95959,0.56034,1.71883,1.65469,False,,,,
+simple_cnn_scratch_A0,SimpleCNN · od zera · A0 (baseline),gaussian_blur_2,"Rozmycie Gaussa, poziom 2 (σ = 2,0)",gaussian_blur,2,correct,10489,0,0.94899,0.96454,0.56703,1.72195,1.6556,False,,,,
+simple_cnn_scratch_A0,SimpleCNN · od zera · A0 (baseline),gaussian_blur_2,"Rozmycie Gaussa, poziom 2 (σ = 2,0)",gaussian_blur,2,wrong,2141,0,0.8746,0.90875,0.52758,1.70356,1.65025,False,,,,
+simple_cnn_scratch_A0,SimpleCNN · od zera · A0 (baseline),gaussian_noise_2,"Szum Gaussa, poziom 2 (σ = 0,06)",gaussian_noise,2,all,12630,0,0.86834,0.93577,0.56034,1.58253,1.51942,False,,,,
+simple_cnn_scratch_A0,SimpleCNN · od zera · A0 (baseline),gaussian_noise_2,"Szum Gaussa, poziom 2 (σ = 0,06)",gaussian_noise,2,correct,8551,0,0.94173,0.95801,0.57199,1.69509,1.61747,False,,,,
+simple_cnn_scratch_A0,SimpleCNN · od zera · A0 (baseline),gaussian_noise_2,"Szum Gaussa, poziom 2 (σ = 0,06)",gaussian_noise,2,wrong,4079,0,0.71449,0.74086,0.53593,1.34656,1.31077,False,,,,
+simple_cnn_scratch_A0,SimpleCNN · od zera · A0 (baseline),darken_2,"Przyciemnienie, poziom 2 (×0,4)",darken,2,all,12630,0,0.95215,0.967,0.56034,1.75187,1.68467,False,,,,
+simple_cnn_scratch_A0,SimpleCNN · od zera · A0 (baseline),darken_2,"Przyciemnienie, poziom 2 (×0,4)",darken,2,correct,11620,0,0.95818,0.96919,0.56282,1.75537,1.6867,False,,,,
+simple_cnn_scratch_A0,SimpleCNN · od zera · A0 (baseline),darken_2,"Przyciemnienie, poziom 2 (×0,4)",darken,2,wrong,1010,0,0.88275,0.90744,0.53188,1.71171,1.64921,False,,,,
+simple_cnn_scratch_A0,SimpleCNN · od zera · A0 (baseline),occlusion_2,"Zasłonięcie ROI, poziom 2 (20% ROI)",occlusion,2,all,12630,0,0.88656,0.91927,0.56034,1.61966,1.56237,True,0.062,0.0426,0.11226,0.38609
+simple_cnn_scratch_A0,SimpleCNN · od zera · A0 (baseline),occlusion_2,"Zasłonięcie ROI, poziom 2 (20% ROI)",occlusion,2,correct,8700,0,0.91182,0.93674,0.57007,1.63914,1.57904,True,0.04438,0.03296,0.11408,0.29306
+simple_cnn_scratch_A0,SimpleCNN · od zera · A0 (baseline),occlusion_2,"Zasłonięcie ROI, poziom 2 (20% ROI)",occlusion,2,wrong,3930,0,0.83063,0.86476,0.5388,1.57653,1.5288,True,0.101,0.08291,0.10824,0.77122
+simple_cnn_scratch_A0,SimpleCNN · od zera · A0 (baseline),jpeg_2,"Kompresja JPEG, poziom 2 (jakość 15)",jpeg,2,all,12630,0,0.93424,0.95753,0.56034,1.71628,1.64626,False,,,,
+simple_cnn_scratch_A0,SimpleCNN · od zera · A0 (baseline),jpeg_2,"Kompresja JPEG, poziom 2 (jakość 15)",jpeg,2,correct,10506,0,0.95137,0.96289,0.56605,1.73213,1.66143,False,,,,
+simple_cnn_scratch_A0,SimpleCNN · od zera · A0 (baseline),jpeg_2,"Kompresja JPEG, poziom 2 (jakość 15)",jpeg,2,wrong,2124,0,0.84951,0.8744,0.53208,1.63787,1.56778,False,,,,

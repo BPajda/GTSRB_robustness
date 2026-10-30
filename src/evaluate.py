@@ -15,7 +15,8 @@ not included) and overwrites only these two keys of metrics.json: no training, n
 evaluation, only best.pt is loaded on CPU.
 
 The test set is locked: --split test also needs --i-know-this-is-final and writes
-separate *_test files. It is used once, in KM3, for the final models only.
+separate *_test files. It is used once, in KM3, for the final models only
+(through src.final_eval, which writes them to results/final_test/<run>/).
 """
 
 from __future__ import annotations
@@ -137,19 +138,26 @@ def accuracy_on(model: nn.Module, dataset, device: torch.device) -> float:
 
 
 def evaluate(out_dir: Path, split: str = "val", smoke: bool = False, force: bool = False,
-             final: bool = False) -> dict:
-    """Evaluate best.pt of the run in out_dir and write metrics(.json|_test.json)."""
+             final: bool = False, dest_dir: Path | None = None, save_predictions: bool = False) -> dict:
+    """Evaluate best.pt of the run in out_dir and write metrics(.json|_test.json).
+
+    dest_dir: where the metrics, per-class F1 and confusion matrix go (default: out_dir).
+    save_predictions: also write predictions(_test).csv (path, label, pred) of the clean data.
+    """
     if split == "test" and not final:
         raise PermissionError("the test set is used once, in KM3: pass final=True / --i-know-this-is-final")
     out_dir = Path(out_dir)
     if not is_trained(out_dir):
         raise FileNotFoundError(f"{out_dir} has no finished training (best.pt + train_summary.json)")
+    dest_dir = Path(dest_dir) if dest_dir is not None else out_dir
+    dest_dir.mkdir(parents=True, exist_ok=True)
     suffix = "" if split == "val" else f"_{split}"
-    metrics_path = out_dir / f"metrics{suffix}.json"
-    if metrics_path.exists() and not force:
+    metrics_path = dest_dir / f"metrics{suffix}.json"
+    predictions_path = dest_dir / f"predictions{suffix}.csv"
+    if metrics_path.exists() and not force and (predictions_path.exists() or not save_predictions):
         metrics = json.loads(metrics_path.read_text(encoding="utf-8"))
         if metrics_complete(metrics):
-            print(f"[{out_dir.name}] {metrics_path.name} exists, skipping (use --force to recompute)")
+            print(f"[{out_dir.name}] {metrics_path} exists, skipping (use --force to recompute)")
             return metrics
 
     device = get_device()
@@ -160,11 +168,13 @@ def evaluate(out_dir: Path, split: str = "val", smoke: bool = False, force: bool
 
     preds, labels, _ = predict(model, make_loader(base, EVAL_BATCH_SIZE, shuffle=False, num_workers=0), device)
     acc, f1 = float((preds == labels).mean()), macro_f1(labels, preds)
-    save_per_class(labels, preds, out_dir / f"per_class_f1{suffix}.csv")
+    save_per_class(labels, preds, dest_dir / f"per_class_f1{suffix}.csv")
+    if save_predictions:
+        pd.DataFrame({"path": base.paths, "label": labels, "pred": preds}).to_csv(predictions_path, index=False)
     split_pl = {"val": "walidacja", "test": "zbiór testowy"}[split]
     save_confusion_matrix(labels, preds, f"Macierz pomyłek – {out_dir.name} ({split_pl}, n = {len(labels)}, "
                                          f"acc = {acc:.2%}, macro-F1 = {f1:.4f})".replace(".", ","),
-                          out_dir / f"confusion_matrix{suffix}.png")
+                          dest_dir / f"confusion_matrix{suffix}.png")
     print(f"[{out_dir.name}] {split} clean: acc {acc:.4f}, macro-F1 {f1:.4f}")
 
     corrupted = {}

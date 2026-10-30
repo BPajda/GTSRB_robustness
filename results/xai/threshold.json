@@ -1,0 +1,170 @@
+{
+  "model": "resnet18_pretrained_A2",
+  "rule": "najniższy próg t, przy którym accuracy zachowanych predykcji (max softmax >= t) na zakłóconej walidacji (15 zakłóceń razem) wynosi co najmniej 99,5%; wyznaczony wyłącznie na walidacji, test tylko raportuje efekt",
+  "chosen_on": "val, 15 corruptions pooled",
+  "confidence": "max softmax of fp32 logits (softmax in float64); a prediction is kept when conf >= threshold",
+  "target_accuracy": 0.995,
+  "threshold": 0.9357966834721874,
+  "val_thresholds_other_targets": {
+    "0.99": 0.8581584399028501,
+    "0.999": 0.989964080946193
+  },
+  "val": {
+    "clean": {
+      "n": 7860,
+      "n_kept": 7722,
+      "coverage": 0.982442748091603,
+      "accuracy_all": 0.9973282442748092,
+      "accuracy_kept": 1.0,
+      "errors_total": 21,
+      "errors_kept": 0,
+      "share_errors_rejected": 1.0,
+      "share_correct_rejected": 0.014925373134328358
+    },
+    "corrupted_all": {
+      "n": 117900,
+      "n_kept": 101299,
+      "coverage": 0.8591942324003393,
+      "accuracy_all": 0.9333842239185751,
+      "accuracy_kept": 0.9950048865240526,
+      "errors_total": 7854,
+      "errors_kept": 506,
+      "share_errors_rejected": 0.9355742296918768,
+      "share_correct_rejected": 0.0840830198280719
+    },
+    "gaussian_blur": {
+      "n": 23580,
+      "n_kept": 20948,
+      "coverage": 0.8883799830364716,
+      "accuracy_all": 0.9500848176420695,
+      "accuracy_kept": 0.9941283177391637,
+      "errors_total": 1177,
+      "errors_kept": 123,
+      "share_errors_rejected": 0.8954970263381479,
+      "share_correct_rejected": 0.07043699504530643
+    },
+    "gaussian_noise": {
+      "n": 23580,
+      "n_kept": 21954,
+      "coverage": 0.9310432569974555,
+      "accuracy_all": 0.972264631043257,
+      "accuracy_kept": 0.9987246059943519,
+      "errors_total": 654,
+      "errors_kept": 28,
+      "share_errors_rejected": 0.9571865443425076,
+      "share_correct_rejected": 0.043618598970601066
+    },
+    "darken": {
+      "n": 23580,
+      "n_kept": 22045,
+      "coverage": 0.93490245971162,
+      "accuracy_all": 0.9753604749787956,
+      "accuracy_kept": 0.9990927647992742,
+      "errors_total": 581,
+      "errors_kept": 20,
+      "share_errors_rejected": 0.9655765920826161,
+      "share_correct_rejected": 0.042349667376842474
+    },
+    "occlusion": {
+      "n": 23580,
+      "n_kept": 16645,
+      "coverage": 0.7058948261238338,
+      "accuracy_all": 0.8497879558948261,
+      "accuracy_kept": 0.9845599279062781,
+      "errors_total": 3542,
+      "errors_kept": 257,
+      "share_errors_rejected": 0.927442123094297,
+      "share_correct_rejected": 0.18215390757560634
+    },
+    "jpeg": {
+      "n": 23580,
+      "n_kept": 19707,
+      "coverage": 0.8357506361323155,
+      "accuracy_all": 0.9194232400339271,
+      "accuracy_kept": 0.9960420155274775,
+      "errors_total": 1900,
+      "errors_kept": 78,
+      "share_errors_rejected": 0.9589473684210527,
+      "share_correct_rejected": 0.09460332103321033
+    }
+  },
+  "test": {
+    "clean": {
+      "n": 12630,
+      "n_kept": 12195,
+      "coverage": 0.9655581947743468,
+      "accuracy_all": 0.9913697545526524,
+      "accuracy_kept": 0.9992619926199262,
+      "errors_total": 109,
+      "errors_kept": 9,
+      "share_errors_rejected": 0.9174311926605505,
+      "share_correct_rejected": 0.026755051513457393
+    },
+    "corrupted_all": {
+      "n": 189450,
+      "n_kept": 159891,
+      "coverage": 0.8439746634996041,
+      "accuracy_all": 0.9272156241752442,
+      "accuracy_kept": 0.9939708926706319,
+      "errors_total": 13789,
+      "errors_kept": 964,
+      "share_errors_rejected": 0.9300892015374573,
+      "share_correct_rejected": 0.09526303505046653
+    },
+    "gaussian_blur": {
+      "n": 37890,
+      "n_kept": 32858,
+      "coverage": 0.8671945104249142,
+      "accuracy_all": 0.939456320929005,
+      "accuracy_kept": 0.9919045590115041,
+      "errors_total": 2294,
+      "errors_kept": 266,
+      "share_errors_rejected": 0.8840453356582388,
+      "share_correct_rejected": 0.08439150466344533
+    },
+    "gaussian_noise": {
+      "n": 37890,
+      "n_kept": 34714,
+      "coverage": 0.9161784111902876,
+      "accuracy_all": 0.9677751385589866,
+      "accuracy_kept": 0.9977818747479403,
+      "errors_total": 1221,
+      "errors_kept": 77,
+      "share_errors_rejected": 0.9369369369369369,
+      "share_correct_rejected": 0.05541465543101803
+    },
+    "darken": {
+      "n": 37890,
+      "n_kept": 34739,
+      "coverage": 0.9168382158880971,
+      "accuracy_all": 0.971997888624967,
+      "accuracy_kept": 0.9986758398341922,
+      "errors_total": 1061,
+      "errors_kept": 46,
+      "share_errors_rejected": 0.9566446748350612,
+      "share_correct_rejected": 0.05799777349371419
+    },
+    "occlusion": {
+      "n": 37890,
+      "n_kept": 26171,
+      "coverage": 0.690709949854843,
+      "accuracy_all": 0.84217471628398,
+      "accuracy_kept": 0.9837224408696649,
+      "errors_total": 5980,
+      "errors_kept": 426,
+      "share_errors_rejected": 0.92876254180602,
+      "share_correct_rejected": 0.19319962394233783
+    },
+    "jpeg": {
+      "n": 37890,
+      "n_kept": 31409,
+      "coverage": 0.8289522301398786,
+      "accuracy_all": 0.9146740564792821,
+      "accuracy_kept": 0.9952561367760833,
+      "errors_total": 3233,
+      "errors_kept": 149,
+      "share_errors_rejected": 0.9539127745128364,
+      "share_correct_rejected": 0.09801771647863347
+    }
+  }
+}

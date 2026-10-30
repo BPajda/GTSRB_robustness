@@ -26,7 +26,8 @@ from torch.utils.data import Dataset
 from torchvision.transforms import v2
 from torchvision.transforms.v2 import functional as TF
 
-from src.data import CLASS_NAMES, IMAGENET_MEAN, IMAGENET_STD, PROJECT_ROOT, SEED, GTSRBDataset, cached_dataset
+from src.data import CLASS_NAMES, IMAGENET_MEAN, IMAGENET_STD, IMG_SIZE, PROJECT_ROOT, SEED, GTSRBDataset, \
+    cached_dataset
 
 CORRUPTIONS = ("gaussian_blur", "gaussian_noise", "darken", "occlusion", "jpeg")
 LEVELS = (1, 2, 3)
@@ -72,16 +73,24 @@ def roi_to_pixels(roi, height: int, width: int) -> tuple[int, int, int, int]:
     return x1, y1, max(x2, x1 + 1), max(y2, y1 + 1)
 
 
-def occlusion(img: torch.Tensor, frac: float, roi, rng: np.random.Generator) -> torch.Tensor:
-    """Black box with the ROI's aspect ratio and frac of its area, placed at random fully inside the ROI."""
-    x1, y1, x2, y2 = roi_to_pixels(roi, img.shape[-2], img.shape[-1])
+def occluder_box(roi, frac: float, height: int, width: int,
+                 rng: np.random.Generator) -> tuple[int, int, int, int]:
+    """Pixel box (x1, y1, x2, y2), x2/y2 exclusive, with the ROI's aspect ratio and frac of its area,
+    placed at random fully inside the ROI."""
+    x1, y1, x2, y2 = roi_to_pixels(roi, height, width)
     rw, rh = x2 - x1, y2 - y1
     w = min(rw, max(1, round(rw * math.sqrt(frac))))
     h = min(rh, max(1, round(rh * math.sqrt(frac))))
     ox = x1 + int(rng.integers(0, rw - w + 1))
     oy = y1 + int(rng.integers(0, rh - h + 1))
+    return ox, oy, ox + w, oy + h
+
+
+def occlusion(img: torch.Tensor, frac: float, roi, rng: np.random.Generator) -> torch.Tensor:
+    """Black box with the ROI's aspect ratio and frac of its area, placed at random fully inside the ROI."""
+    x1, y1, x2, y2 = occluder_box(roi, frac, img.shape[-2], img.shape[-1], rng)
     out = img.clone()
-    out[:, oy:oy + h, ox:ox + w] = 0.0
+    out[:, y1:y2, x1:x2] = 0.0
     return out
 
 
@@ -153,6 +162,13 @@ class CorruptedDataset(Dataset):
         img = self.to_float(self.base.image_uint8(idx))
         rng = corruption_rng(self.seed, idx, self.ctype, self.level)
         return apply_corruption(img, self.ctype, self.level, roi=self.base.rois[idx], rng=rng)
+
+    def occluder(self, idx: int) -> tuple[int, int, int, int]:
+        """Pixel box (x1, y1, x2, y2) of the black box on image idx (occlusion only)."""
+        if self.ctype != "occlusion":
+            raise ValueError(f"{self.ctype} has no occluder")
+        rng = corruption_rng(self.seed, idx, self.ctype, self.level)
+        return occluder_box(self.base.rois[idx], SEVERITY["occlusion"][self.level], IMG_SIZE, IMG_SIZE, rng)
 
     def __getitem__(self, idx: int) -> tuple[torch.Tensor, int, torch.Tensor]:
         x = self.normalize(self.corrupted_image(idx))

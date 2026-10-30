@@ -1,0 +1,44 @@
+class_id,class_name,precision,recall,f1,support
+0,Speed limit (20km/h),1.0,1.0,1.0,60
+1,Speed limit (30km/h),0.99721,0.99444,0.99583,720
+2,Speed limit (50km/h),0.99734,0.99867,0.998,750
+3,Speed limit (60km/h),0.99336,0.99778,0.99557,450
+4,Speed limit (70km/h),0.99697,0.99697,0.99697,660
+5,Speed limit (80km/h),0.9843,0.99524,0.98974,630
+6,End of speed limit (80km/h),1.0,0.93333,0.96552,150
+7,Speed limit (100km/h),1.0,0.99778,0.99889,450
+8,Speed limit (120km/h),0.99336,0.99778,0.99557,450
+9,No passing,0.99585,1.0,0.99792,480
+10,No passing for vehicles over 3.5t,0.99698,1.0,0.99849,660
+11,Right-of-way at the next intersection,0.9633,1.0,0.98131,420
+12,Priority road,0.99855,1.0,0.99928,690
+13,Yield,0.99861,0.99722,0.99792,720
+14,Stop,1.0,0.9963,0.99814,270
+15,No vehicles,1.0,0.99048,0.99522,210
+16,Vehicles over 3.5t prohibited,1.0,1.0,1.0,150
+17,No entry,0.99721,0.99444,0.99583,360
+18,General caution,1.0,0.96923,0.98438,390
+19,Dangerous curve to the left,0.9375,1.0,0.96774,60
+20,Dangerous curve to the right,0.84112,1.0,0.91371,90
+21,Double curve,1.0,0.8,0.88889,90
+22,Bumpy road,1.0,0.81667,0.89908,120
+23,Slippery road,0.98684,1.0,0.99338,150
+24,Road narrows on the right,1.0,1.0,1.0,90
+25,Road work,0.96169,0.99375,0.97746,480
+26,Traffic signals,0.98889,0.98889,0.98889,180
+27,Pedestrians,0.88235,1.0,0.9375,60
+28,Children crossing,1.0,1.0,1.0,150
+29,Bicycles crossing,1.0,1.0,1.0,90
+30,Beware of ice/snow,1.0,0.93333,0.96552,150
+31,Wild animals crossing,0.98864,0.96667,0.97753,270
+32,End of all speed and passing limits,1.0,1.0,1.0,60
+33,Turn right ahead,0.99526,1.0,0.99762,210
+34,Turn left ahead,1.0,1.0,1.0,120
+35,Ahead only,0.99744,1.0,0.99872,390
+36,Go straight or right,0.98361,1.0,0.99174,120
+37,Go straight or left,1.0,0.98333,0.9916,60
+38,Keep right,0.99855,1.0,0.99928,690
+39,Keep left,0.98889,0.98889,0.98889,90
+40,Roundabout mandatory,1.0,0.97778,0.98876,90
+41,End of no passing,1.0,1.0,1.0,60
+42,End of no passing by vehicles over 3.5t,0.95745,1.0,0.97826,90

@@ -1,0 +1,31 @@
+run,role,rank,true_id,true_code,true_name,pred_id,pred_code,pred_name,count,share_of_errors,share_of_true_class,errors_total
+resnet18_pretrained_A2,final,1,22,A-11,Nierówna droga,25,A-14,Roboty na drodze,19,0.17273,0.15833,110
+resnet18_pretrained_A2,final,2,21,A-4,Niebezpieczne zakręty – pierwszy w lewo,11,A-6a,Skrzyżowanie z drogą podporządkowaną występującą po obu stronach,14,0.12727,0.15556,110
+resnet18_pretrained_A2,final,3,31,A-18b,Zwierzęta dzikie,20,A-1,Niebezpieczny zakręt w prawo,9,0.08182,0.03333,110
+resnet18_pretrained_A2,final,4,30,A-32,Oszronienie jezdni,20,A-1,Niebezpieczny zakręt w prawo,8,0.07273,0.05333,110
+resnet18_pretrained_A2,final,5,18,A-30,Inne niebezpieczeństwo,27,A-16,Przejście dla pieszych,7,0.06364,0.01795,110
+resnet18_pretrained_A2,final,6,6,B-34,Koniec ograniczenia prędkości do 80 km/h,5,B-33,Ograniczenie prędkości do 80 km/h,6,0.05455,0.04,110
+resnet18_pretrained_A2,final,7,1,B-33,Ograniczenie prędkości do 30 km/h,5,B-33,Ograniczenie prędkości do 80 km/h,4,0.03636,0.00556,110
+resnet18_pretrained_A2,final,8,6,B-34,Koniec ograniczenia prędkości do 80 km/h,42,B-28,Koniec zakazu wyprzedzania przez samochody ciężarowe,4,0.03636,0.02667,110
+resnet18_pretrained_A2,final,9,21,A-4,Niebezpieczne zakręty – pierwszy w lewo,19,A-2,Niebezpieczny zakręt w lewo,4,0.03636,0.04444,110
+resnet18_pretrained_A2,final,10,5,B-33,Ograniczenie prędkości do 80 km/h,3,B-33,Ograniczenie prędkości do 60 km/h,3,0.02727,0.00476,110
+resnet18_pretrained_A2,final,11,17,B-2,Zakaz wjazdu,9,B-25,Zakaz wyprzedzania,2,0.01818,0.00556,110
+resnet18_pretrained_A2,final,12,18,A-30,Inne niebezpieczeństwo,26,A-29,Sygnały świetlne,2,0.01818,0.00513,110
+resnet18_pretrained_A2,final,13,18,A-30,Inne niebezpieczeństwo,31,A-18b,Zwierzęta dzikie,2,0.01818,0.00513,110
+resnet18_pretrained_A2,final,14,26,A-29,Sygnały świetlne,8,B-33,Ograniczenie prędkości do 120 km/h,2,0.01818,0.01111,110
+resnet18_pretrained_A2,final,15,30,A-32,Oszronienie jezdni,23,A-15,Śliska jezdnia,2,0.01818,0.01333,110
+simple_cnn_scratch_A0,baseline,1,22,A-11,Nierówna droga,25,A-14,Roboty na drodze,31,0.07488,0.25833,414
+simple_cnn_scratch_A0,baseline,2,17,B-2,Zakaz wjazdu,38,C-9,Nakaz jazdy z prawej strony znaku,29,0.07005,0.08056,414
+simple_cnn_scratch_A0,baseline,3,21,A-4,Niebezpieczne zakręty – pierwszy w lewo,13,A-7,Ustąp pierwszeństwa,28,0.06763,0.31111,414
+simple_cnn_scratch_A0,baseline,4,23,A-15,Śliska jezdnia,31,A-18b,Zwierzęta dzikie,26,0.0628,0.17333,414
+simple_cnn_scratch_A0,baseline,5,6,B-34,Koniec ograniczenia prędkości do 80 km/h,42,B-28,Koniec zakazu wyprzedzania przez samochody ciężarowe,25,0.06039,0.16667,414
+simple_cnn_scratch_A0,baseline,6,12,D-1,Droga z pierwszeństwem,13,A-7,Ustąp pierwszeństwa,25,0.06039,0.03623,414
+simple_cnn_scratch_A0,baseline,7,39,C-10,Nakaz jazdy z lewej strony znaku,33,C-2,Nakaz jazdy w prawo za znakiem,20,0.04831,0.22222,414
+simple_cnn_scratch_A0,baseline,8,8,B-33,Ograniczenie prędkości do 120 km/h,5,B-33,Ograniczenie prędkości do 80 km/h,19,0.04589,0.04222,414
+simple_cnn_scratch_A0,baseline,9,41,B-27,Koniec zakazu wyprzedzania,42,B-28,Koniec zakazu wyprzedzania przez samochody ciężarowe,15,0.03623,0.25,414
+simple_cnn_scratch_A0,baseline,10,3,B-33,Ograniczenie prędkości do 60 km/h,5,B-33,Ograniczenie prędkości do 80 km/h,13,0.0314,0.02889,414
+simple_cnn_scratch_A0,baseline,11,27,A-16,Przejście dla pieszych,28,A-17,Dzieci,13,0.0314,0.21667,414
+simple_cnn_scratch_A0,baseline,12,30,A-32,Oszronienie jezdni,20,A-1,Niebezpieczny zakręt w prawo,10,0.02415,0.06667,414
+simple_cnn_scratch_A0,baseline,13,25,A-14,Roboty na drodze,11,A-6a,Skrzyżowanie z drogą podporządkowaną występującą po obu stronach,8,0.01932,0.01667,414
+simple_cnn_scratch_A0,baseline,14,18,A-30,Inne niebezpieczeństwo,21,A-4,Niebezpieczne zakręty – pierwszy w lewo,7,0.01691,0.01795,414
+simple_cnn_scratch_A0,baseline,15,27,A-16,Przejście dla pieszych,30,A-32,Oszronienie jezdni,7,0.01691,0.11667,414

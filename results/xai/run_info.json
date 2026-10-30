@@ -1,0 +1,153 @@
+{
+  "split": "test",
+  "smoke": false,
+  "weights": {
+    "resnet18_pretrained_A2": "results/resnet18_pretrained_A2/best.pt",
+    "simple_cnn_scratch_A0": "results/simple_cnn_scratch_A0/best.pt"
+  },
+  "n_report": 12630,
+  "n_val": 7860,
+  "batch_size": 128,
+  "device": "cuda",
+  "precision": "fp32 (autocast off, TF32 off)",
+  "gradcam": {
+    "resnet18_pretrained_A2": {
+      "layer": "layer4.1",
+      "map_size": "8×8",
+      "target": "predicted class",
+      "library": "pytorch-grad-cam GradCAM",
+      "normalization": "min-max per image to [0, 1], upsampled to 64x64"
+    },
+    "simple_cnn_scratch_A0": {
+      "layer": "features.2.1",
+      "map_size": "16×16",
+      "target": "predicted class",
+      "library": "pytorch-grad-cam GradCAM",
+      "normalization": "min-max per image to [0, 1], upsampled to 64x64"
+    }
+  },
+  "cam_conditions": [
+    "clean",
+    "gaussian_blur_2",
+    "gaussian_noise_2",
+    "darken_2",
+    "occlusion_2",
+    "jpeg_2"
+  ],
+  "roi": "annotated ROI rescaled to 64x64 and rounded to integer pixels (as in the occlusion corruption)",
+  "pred_diff_vs_final_eval": {
+    "resnet18_pretrained_A2": {
+      "n_compared": 12630,
+      "n_different": 1
+    },
+    "simple_cnn_scratch_A0": {
+      "n_compared": 12630,
+      "n_different": 17
+    }
+  },
+  "threshold": 0.9357966834721874,
+  "shown_images": {
+    "error_gallery": {
+      "indices": [
+        10746,
+        10015,
+        7330,
+        6274,
+        9239,
+        1969,
+        12006,
+        6901,
+        10156,
+        10584,
+        7578,
+        6090,
+        6879,
+        5095,
+        4658,
+        2054,
+        76,
+        11192,
+        4383,
+        12339,
+        7147,
+        4662,
+        7896,
+        6255
+      ],
+      "paths": [
+        "Test/10746.png",
+        "Test/10015.png",
+        "Test/07330.png",
+        "Test/06274.png",
+        "Test/09239.png",
+        "Test/01969.png",
+        "Test/12006.png",
+        "Test/06901.png",
+        "Test/10156.png",
+        "Test/10584.png",
+        "Test/07578.png",
+        "Test/06090.png",
+        "Test/06879.png",
+        "Test/05095.png",
+        "Test/04658.png",
+        "Test/02054.png",
+        "Test/00076.png",
+        "Test/11192.png",
+        "Test/04383.png",
+        "Test/12339.png",
+        "Test/07147.png",
+        "Test/04662.png",
+        "Test/07896.png",
+        "Test/06255.png"
+      ]
+    },
+    "gradcam_examples": {
+      "indices": [
+        1129,
+        9847,
+        8678,
+        5556,
+        5510,
+        10470,
+        969,
+        8965
+      ],
+      "paths": [
+        "Test/01129.png",
+        "Test/09847.png",
+        "Test/08678.png",
+        "Test/05556.png",
+        "Test/05510.png",
+        "Test/10470.png",
+        "Test/00969.png",
+        "Test/08965.png"
+      ]
+    },
+    "corruption_shift": {
+      "indices": [
+        10377,
+        9574,
+        2003,
+        3955
+      ],
+      "paths": [
+        "Test/10377.png",
+        "Test/09574.png",
+        "Test/02003.png",
+        "Test/03955.png"
+      ],
+      "kinds": [
+        "stabilne",
+        "stabilne",
+        "zmienia predykcję",
+        "zmienia predykcję"
+      ]
+    }
+  },
+  "timing_s": {
+    "load_s": 26.2,
+    "test_pass_s": 555.9,
+    "val_pass_s": 214.5,
+    "outputs_s": 11.9
+  }
+}

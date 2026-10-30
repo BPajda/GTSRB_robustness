@@ -1,0 +1,13 @@
+run,role,model,metric,val,test,val_minus_test,n_val,n_test
+resnet18_pretrained_A2,final,ResNet18 · ImageNet · A2 (finalny),acc,0.997328,0.991291,0.006037,7860,12630
+resnet18_pretrained_A2,final,ResNet18 · ImageNet · A2 (finalny),macro_f1,0.996917,0.984398,0.012519,7860,12630
+resnet18_pretrained_A2,final,ResNet18 · ImageNet · A2 (finalny),mca,0.933478,0.927247,0.006231,7860,12630
+resnet18_pretrained_A2,final,ResNet18 · ImageNet · A2 (finalny),relative_drop,0.064022,0.064606,-0.000584,7860,12630
+simple_cnn_scratch_A0,baseline,SimpleCNN · od zera · A0 (baseline),acc,0.973537,0.967221,0.006316,7860,12630
+simple_cnn_scratch_A0,baseline,SimpleCNN · od zera · A0 (baseline),macro_f1,0.95251,0.946359,0.006151,7860,12630
+simple_cnn_scratch_A0,baseline,SimpleCNN · od zera · A0 (baseline),mca,0.763325,0.762977,0.000348,7860,12630
+simple_cnn_scratch_A0,baseline,SimpleCNN · od zera · A0 (baseline),relative_drop,0.215926,0.211166,0.00476,7860,12630
+resnet18_pretrained_A0,reference,ResNet18 · ImageNet · A0 (bez augmentacji),acc,0.996692,0.992557,0.004135,7860,12630
+resnet18_pretrained_A0,reference,ResNet18 · ImageNet · A0 (bez augmentacji),macro_f1,0.99504,0.990046,0.004994,7860,12630
+resnet18_pretrained_A0,reference,ResNet18 · ImageNet · A0 (bez augmentacji),mca,0.873596,0.868931,0.004665,7860,12630
+resnet18_pretrained_A0,reference,ResNet18 · ImageNet · A0 (bez augmentacji),relative_drop,0.123504,0.124553,-0.001049,7860,12630

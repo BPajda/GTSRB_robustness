@@ -1,0 +1,49 @@
+run,role,corruption,level,param,val,test,val_minus_test
+resnet18_pretrained_A2,final,clean,0,,0.997328,0.991291,0.006037
+resnet18_pretrained_A2,final,gaussian_blur,1,"σ = 0,8",0.997328,0.990816,0.006512
+resnet18_pretrained_A2,final,gaussian_blur,2,"σ = 2,0",0.981043,0.968567,0.012476
+resnet18_pretrained_A2,final,gaussian_blur,3,"σ = 3,0",0.871628,0.859382,0.012246
+resnet18_pretrained_A2,final,gaussian_noise,1,"σ = 0,03",0.994784,0.989074,0.00571
+resnet18_pretrained_A2,final,gaussian_noise,2,"σ = 0,06",0.980407,0.976485,0.003922
+resnet18_pretrained_A2,final,gaussian_noise,3,"σ = 0,1",0.941858,0.938005,0.003853
+resnet18_pretrained_A2,final,darken,1,"×0,6",0.994529,0.989311,0.005218
+resnet18_pretrained_A2,final,darken,2,"×0,4",0.984987,0.980285,0.004702
+resnet18_pretrained_A2,final,darken,3,"×0,25",0.948601,0.947268,0.001333
+resnet18_pretrained_A2,final,occlusion,1,10% ROI,0.969593,0.961758,0.007835
+resnet18_pretrained_A2,final,occlusion,2,20% ROI,0.872901,0.858353,0.014548
+resnet18_pretrained_A2,final,occlusion,3,30% ROI,0.705725,0.70578,-5.5e-05
+resnet18_pretrained_A2,final,jpeg,1,jakość 30,0.983588,0.977118,0.00647
+resnet18_pretrained_A2,final,jpeg,2,jakość 15,0.940585,0.936184,0.004401
+resnet18_pretrained_A2,final,jpeg,3,jakość 8,0.834606,0.830325,0.004281
+simple_cnn_scratch_A0,baseline,clean,0,,0.973537,0.967221,0.006316
+simple_cnn_scratch_A0,baseline,gaussian_blur,1,"σ = 0,8",0.961578,0.963025,-0.001447
+simple_cnn_scratch_A0,baseline,gaussian_blur,2,"σ = 2,0",0.832188,0.831908,0.00028
+simple_cnn_scratch_A0,baseline,gaussian_blur,3,"σ = 3,0",0.490076,0.495091,-0.005015
+simple_cnn_scratch_A0,baseline,gaussian_noise,1,"σ = 0,03",0.894911,0.892795,0.002116
+simple_cnn_scratch_A0,baseline,gaussian_noise,2,"σ = 0,06",0.666794,0.677276,-0.010482
+simple_cnn_scratch_A0,baseline,gaussian_noise,3,"σ = 0,1",0.434987,0.430245,0.004742
+simple_cnn_scratch_A0,baseline,darken,1,"×0,6",0.954198,0.954157,4.1e-05
+simple_cnn_scratch_A0,baseline,darken,2,"×0,4",0.918957,0.922249,-0.003292
+simple_cnn_scratch_A0,baseline,darken,3,"×0,25",0.855344,0.844972,0.010372
+simple_cnn_scratch_A0,baseline,occlusion,1,10% ROI,0.857379,0.854236,0.003143
+simple_cnn_scratch_A0,baseline,occlusion,2,20% ROI,0.671628,0.688124,-0.016496
+simple_cnn_scratch_A0,baseline,occlusion,3,30% ROI,0.466667,0.475614,-0.008947
+simple_cnn_scratch_A0,baseline,jpeg,1,jakość 30,0.927608,0.928345,-0.000737
+simple_cnn_scratch_A0,baseline,jpeg,2,jakość 15,0.842112,0.8327,0.009412
+simple_cnn_scratch_A0,baseline,jpeg,3,jakość 8,0.675445,0.653919,0.021526
+resnet18_pretrained_A0,reference,clean,0,,0.996692,0.992557,0.004135
+resnet18_pretrained_A0,reference,gaussian_blur,1,"σ = 0,8",0.995929,0.993032,0.002897
+resnet18_pretrained_A0,reference,gaussian_blur,2,"σ = 2,0",0.981934,0.978543,0.003391
+resnet18_pretrained_A0,reference,gaussian_blur,3,"σ = 3,0",0.844148,0.821378,0.02277
+resnet18_pretrained_A0,reference,gaussian_noise,1,"σ = 0,03",0.987023,0.986302,0.000721
+resnet18_pretrained_A0,reference,gaussian_noise,2,"σ = 0,06",0.942875,0.929691,0.013184
+resnet18_pretrained_A0,reference,gaussian_noise,3,"σ = 0,1",0.843893,0.82502,0.018873
+resnet18_pretrained_A0,reference,darken,1,"×0,6",0.994911,0.992795,0.002116
+resnet18_pretrained_A0,reference,darken,2,"×0,4",0.994148,0.992241,0.001907
+resnet18_pretrained_A0,reference,darken,3,"×0,25",0.989059,0.988915,0.000144
+resnet18_pretrained_A0,reference,occlusion,1,10% ROI,0.8243,0.825574,-0.001274
+resnet18_pretrained_A0,reference,occlusion,2,20% ROI,0.601145,0.601188,-4.3e-05
+resnet18_pretrained_A0,reference,occlusion,3,30% ROI,0.378626,0.368884,0.009742
+resnet18_pretrained_A0,reference,jpeg,1,jakość 30,0.98117,0.984165,-0.002995
+resnet18_pretrained_A0,reference,jpeg,2,jakość 15,0.93117,0.935313,-0.004143
+resnet18_pretrained_A0,reference,jpeg,3,jakość 8,0.813613,0.810926,0.002687

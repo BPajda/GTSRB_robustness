@@ -1,0 +1,44 @@
+class_id,class_name,precision,recall,f1,support
+0,Speed limit (20km/h),1.0,0.96667,0.98305,60
+1,Speed limit (30km/h),0.98895,0.99444,0.99169,720
+2,Speed limit (50km/h),0.97892,0.99067,0.98476,750
+3,Speed limit (60km/h),0.9954,0.96222,0.97853,450
+4,Speed limit (70km/h),0.99542,0.98788,0.99163,660
+5,Speed limit (80km/h),0.95084,0.98254,0.96643,630
+6,End of speed limit (80km/h),1.0,0.82667,0.90511,150
+7,Speed limit (100km/h),0.98894,0.99333,0.99113,450
+8,Speed limit (120km/h),0.9814,0.93778,0.95909,450
+9,No passing,1.0,0.99375,0.99687,480
+10,No passing for vehicles over 3.5t,0.98951,1.0,0.99472,660
+11,Right-of-way at the next intersection,0.95652,0.99524,0.9755,420
+12,Priority road,0.98225,0.96232,0.97218,690
+13,Yield,0.9219,1.0,0.95936,720
+14,Stop,0.99631,1.0,0.99815,270
+15,No vehicles,1.0,0.99048,0.99522,210
+16,Vehicles over 3.5t prohibited,1.0,1.0,1.0,150
+17,No entry,1.0,0.91667,0.95652,360
+18,General caution,0.98913,0.93333,0.96042,390
+19,Dangerous curve to the left,1.0,1.0,1.0,60
+20,Dangerous curve to the right,0.81081,1.0,0.89552,90
+21,Double curve,0.89394,0.65556,0.75641,90
+22,Bumpy road,0.98889,0.74167,0.84762,120
+23,Slippery road,0.99145,0.77333,0.86891,150
+24,Road narrows on the right,0.98901,1.0,0.99448,90
+25,Road work,0.93042,0.975,0.95219,480
+26,Traffic signals,0.95652,0.97778,0.96703,180
+27,Pedestrians,0.92857,0.65,0.76471,60
+28,Children crossing,0.90798,0.98667,0.94569,150
+29,Bicycles crossing,0.96739,0.98889,0.97802,90
+30,Beware of ice/snow,0.93478,0.86,0.89583,150
+31,Wild animals crossing,0.9069,0.97407,0.93929,270
+32,End of all speed and passing limits,1.0,1.0,1.0,60
+33,Turn right ahead,0.90435,0.99048,0.94545,210
+34,Turn left ahead,0.96774,1.0,0.98361,120
+35,Ahead only,1.0,0.98974,0.99485,390
+36,Go straight or right,0.98361,1.0,0.99174,120
+37,Go straight or left,0.96721,0.98333,0.97521,60
+38,Keep right,0.95822,0.9971,0.97727,690
+39,Keep left,1.0,0.76667,0.86792,90
+40,Roundabout mandatory,0.96629,0.95556,0.96089,90
+41,End of no passing,0.97826,0.75,0.84906,60
+42,End of no passing by vehicles over 3.5t,0.672,0.93333,0.7814,90

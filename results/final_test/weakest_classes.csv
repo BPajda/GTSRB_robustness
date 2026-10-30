@@ -1,0 +1,11 @@
+rank,class_id,code,class_name,group,precision,recall,f1,support,missed,false_alarms,most_confused_with_id,most_confused_with,most_confused_count
+1,21,A-4,Niebezpieczne zakręty – pierwszy w lewo,Znaki ostrzegawcze,1.0,0.8,0.88889,90,18,0,11.0,Skrzyżowanie z drogą podporządkowaną występującą po obu stronach,14
+2,22,A-11,Nierówna droga,Znaki ostrzegawcze,1.0,0.81667,0.89908,120,22,0,25.0,Roboty na drodze,19
+3,20,A-1,Niebezpieczny zakręt w prawo,Znaki ostrzegawcze,0.84112,1.0,0.91371,90,0,17,,,0
+4,27,A-16,Przejście dla pieszych,Znaki ostrzegawcze,0.88235,1.0,0.9375,60,0,8,,,0
+5,6,B-34,Koniec ograniczenia prędkości do 80 km/h,Znaki odwołujące,1.0,0.93333,0.96552,150,10,0,5.0,Ograniczenie prędkości do 80 km/h,6
+6,30,A-32,Oszronienie jezdni,Znaki ostrzegawcze,1.0,0.93333,0.96552,150,10,0,20.0,Niebezpieczny zakręt w prawo,8
+7,19,A-2,Niebezpieczny zakręt w lewo,Znaki ostrzegawcze,0.9375,1.0,0.96774,60,0,4,,,0
+8,25,A-14,Roboty na drodze,Znaki ostrzegawcze,0.96169,0.99375,0.97746,480,3,19,11.0,Skrzyżowanie z drogą podporządkowaną występującą po obu stronach,1
+9,31,A-18b,Zwierzęta dzikie,Znaki ostrzegawcze,0.98864,0.96667,0.97753,270,9,3,20.0,Niebezpieczny zakręt w prawo,9
+10,42,B-28,Koniec zakazu wyprzedzania przez samochody ciężarowe,Znaki odwołujące,0.95745,1.0,0.97826,90,0,4,,,0

@@ -126,6 +126,44 @@ Wyniki runu w `results/<run>/`: `config.json`, `history.csv`, `train_summary.jso
 `per_class_f1.csv`, `confusion_matrix.png`, `best.pt` (poza gitem). Wybory etapów: `results/e2_selection.json`,
 `results/e4_selection.json`, `results/e4_summary.json`.
 
+## Aplikacja (KM3)
+
+Demonstracja modelu finalnego (ResNet18, wagi ImageNet, augmentacja A2) w przeglądarce, interfejs po polsku:
+
+```powershell
+python -m app.app                  # GPU, jeśli jest dostępne, w przeciwnym razie CPU
+python -m app.app --device cpu     # wymuszenie CPU – aplikacja nie wymaga karty graficznej
+```
+
+Adres pojawi się w konsoli (domyślnie <http://127.0.0.1:7860>). Start trwa ok. 25 s (import bibliotek),
+zamknięcie – Ctrl+C. Opcje: `--port <nr>`, `--share` (tymczasowy publiczny link gradio.live).
+
+Potrzebne pliki: wagi `results/resnet18_pretrained_A2/best.pt` (poza gitem; trening:
+`python -m src.train --config configs/resnet18_pretrained_A2.yaml`), próg `results/xai/threshold.json`
+(`python -m src.xai`) oraz katalog `data/` – zdjęcia testowe do losowania i wzorcowe piktogramy z `data/Meta/`.
+Bez `data/Test` działa tylko wgrywanie własnych zdjęć.
+
+Zakładki:
+
+- **Rozpoznaj** – wgranie zdjęcia (z kadrowaniem w edytorze) albo losowe zdjęcie testowe. Wynik: piktogram
+  i polska nazwa przewidzianej klasy, top-5 z prawdopodobieństwami, obraz wejściowy 64×64 obok mapy Grad-CAM,
+  a dla zdjęcia testowego także prawdziwa klasa i informacja, czy model trafił. Gdy pewność (max softmax) jest
+  niższa od progu z `results/xai/threshold.json` (93,58%, wyznaczony na walidacji), pojawia się ostrzeżenie
+  „Model nie jest pewny”.
+- **Test odporności** – to samo zdjęcie z jednym z 5 zakłóceń z `src/corruptions.py` na poziomie 0–3: obraz po
+  zakłóceniu, predykcja, pewność, Grad-CAM oraz wykres pewności prawdziwej i przewidzianej klasy w funkcji poziomu
+  (dla wgranego zdjęcia zamiast prawdziwej klasy – klasa rozpoznana bez zakłóceń). Dla zdjęcia testowego zakłócone
+  obrazy są identyczne z tymi z ewaluacji (ten sam seed, indeks i ROI); na wgranym zdjęciu zasłonięcie trafia
+  w środkowe 80% kadru.
+- **Wyniki** – tabele z `results/summary/summary.csv` i `results/final_test/comparison.csv` oraz wykresy
+  z `results/summary/`, `results/final_test/` i `results/xai/` z krótkimi opisami.
+- **O projekcie** – opis projektu, link do repozytorium, ograniczenia.
+
+Model oczekuje wycinka, na którym znak jest na środku i zajmuje większość kadru (jak w GTSRB): zdjęcie jest
+skalowane do 64×64 bez zachowania proporcji, tak samo jak w treningu, więc zdjęcie całej ulicy trzeba najpierw
+przyciąć. Predykcja z Grad-CAM trwa ok. 0,1 s na CPU; obliczenia w fp32, tak jak przy wyznaczaniu progu
+(na GPU wyniki są te same).
+
 ## Struktura repozytorium
 
 ```
