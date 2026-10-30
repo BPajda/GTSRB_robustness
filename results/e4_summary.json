@@ -1,0 +1,89 @@
+{
+  "winner": "resnet18_pretrained_A2",
+  "seeds": [
+    42,
+    43,
+    44
+  ],
+  "runs": [
+    "resnet18_pretrained_A2",
+    "resnet18_pretrained_A2_s43",
+    "resnet18_pretrained_A2_s44"
+  ],
+  "std_definition": "sample standard deviation (ddof=1) over the seeds",
+  "per_seed": {
+    "resnet18_pretrained_A2": {
+      "seed": 42,
+      "acc": 0.997328,
+      "macro_f1": 0.996917,
+      "mca": 0.933478,
+      "relative_drop": 0.064022,
+      "acc_gaussian_blur": 0.95,
+      "acc_gaussian_noise": 0.97235,
+      "acc_darken": 0.976039,
+      "acc_occlusion": 0.849406,
+      "acc_jpeg": 0.919593,
+      "best_epoch": 4,
+      "train_time_s": 375.6,
+      "cpu_latency_ms": 27.126
+    },
+    "resnet18_pretrained_A2_s43": {
+      "seed": 43,
+      "acc": 0.997201,
+      "macro_f1": 0.996892,
+      "mca": 0.951018,
+      "relative_drop": 0.046313,
+      "acc_gaussian_blur": 0.967388,
+      "acc_gaussian_noise": 0.977184,
+      "acc_darken": 0.989228,
+      "acc_occlusion": 0.892494,
+      "acc_jpeg": 0.928795,
+      "best_epoch": 11,
+      "train_time_s": 498.5,
+      "cpu_latency_ms": 27.614
+    },
+    "resnet18_pretrained_A2_s44": {
+      "seed": 44,
+      "acc": 0.998982,
+      "macro_f1": 0.998097,
+      "mca": 0.964283,
+      "relative_drop": 0.034734,
+      "acc_gaussian_blur": 0.977099,
+      "acc_gaussian_noise": 0.983715,
+      "acc_darken": 0.998007,
+      "acc_occlusion": 0.924682,
+      "acc_jpeg": 0.937914,
+      "best_epoch": 15,
+      "train_time_s": 585.1,
+      "cpu_latency_ms": 26.96
+    }
+  },
+  "mean": {
+    "acc": 0.997837,
+    "macro_f1": 0.997302,
+    "mca": 0.949593,
+    "relative_drop": 0.048356,
+    "acc_gaussian_blur": 0.964829,
+    "acc_gaussian_noise": 0.97775,
+    "acc_darken": 0.987758,
+    "acc_occlusion": 0.888861,
+    "acc_jpeg": 0.928767,
+    "best_epoch": 10.0,
+    "train_time_s": 486.4,
+    "cpu_latency_ms": 27.233333
+  },
+  "std": {
+    "acc": 0.000994,
+    "macro_f1": 0.000689,
+    "mca": 0.015452,
+    "relative_drop": 0.014751,
+    "acc_gaussian_blur": 0.01373,
+    "acc_gaussian_noise": 0.005704,
+    "acc_darken": 0.011058,
+    "acc_occlusion": 0.037769,
+    "acc_jpeg": 0.009161,
+    "best_epoch": 5.567764,
+    "train_time_s": 105.272836,
+    "cpu_latency_ms": 0.339955
+  }
+}

@@ -1,0 +1,44 @@
+class_id,class_name,precision,recall,f1,support
+0,Speed limit (20km/h),1.0,0.76667,0.86792,30
+1,Speed limit (30km/h),0.98246,0.99556,0.98896,450
+2,Speed limit (50km/h),0.98901,1.0,0.99448,450
+3,Speed limit (60km/h),0.99631,1.0,0.99815,270
+4,Speed limit (70km/h),0.99488,0.99744,0.99616,390
+5,Speed limit (80km/h),0.9944,0.98611,0.99024,360
+6,End of speed limit (80km/h),1.0,0.95556,0.97727,90
+7,Speed limit (100km/h),0.99,0.99,0.99,300
+8,Speed limit (120km/h),0.98885,0.98519,0.98701,270
+9,No passing,0.96117,0.99,0.97537,300
+10,No passing for vehicles over 3.5t,0.975,1.0,0.98734,390
+11,Right-of-way at the next intersection,0.9854,1.0,0.99265,270
+12,Priority road,0.98353,0.99524,0.98935,420
+13,Yield,1.0,0.98667,0.99329,450
+14,Stop,1.0,1.0,1.0,150
+15,No vehicles,1.0,0.91333,0.9547,150
+16,Vehicles over 3.5t prohibited,1.0,0.91111,0.95349,90
+17,No entry,1.0,1.0,1.0,210
+18,General caution,1.0,0.99583,0.99791,240
+19,Dangerous curve to the left,0.96774,1.0,0.98361,30
+20,Dangerous curve to the right,0.94643,0.88333,0.91379,60
+21,Double curve,0.98901,1.0,0.99448,90
+22,Bumpy road,0.98901,1.0,0.99448,90
+23,Slippery road,0.99167,0.99167,0.99167,120
+24,Road narrows on the right,1.0,0.95,0.97436,60
+25,Road work,0.98039,1.0,0.9901,300
+26,Traffic signals,1.0,1.0,1.0,120
+27,Pedestrians,1.0,1.0,1.0,60
+28,Children crossing,0.98347,0.99167,0.98755,120
+29,Bicycles crossing,0.96774,1.0,0.98361,30
+30,Beware of ice/snow,1.0,0.9,0.94737,90
+31,Wild animals crossing,0.99338,1.0,0.99668,150
+32,End of all speed and passing limits,1.0,1.0,1.0,30
+33,Turn right ahead,0.97561,1.0,0.98765,120
+34,Turn left ahead,0.90909,0.66667,0.76923,90
+35,Ahead only,0.99561,0.94583,0.97009,240
+36,Go straight or right,0.89109,1.0,0.94241,90
+37,Go straight or left,0.96667,0.96667,0.96667,30
+38,Keep right,0.9417,1.0,0.96998,420
+39,Keep left,1.0,0.96667,0.98305,60
+40,Roundabout mandatory,0.95161,0.98333,0.96721,60
+41,End of no passing,0.96774,1.0,0.98361,60
+42,End of no passing by vehicles over 3.5t,1.0,1.0,1.0,60

@@ -1,0 +1,200 @@
+{
+  "rule_km1": [
+    "1. Odrzucamy warianty, których macro-F1 na czystej walidacji jest niższe od najlepszego o więcej niż 1 p.p.",
+    "2. Spośród pozostałych wybieramy wariant z najwyższym mCA.",
+    "3. Jeśli różnica mCA jest mniejsza niż 0,5 p.p., wygrywa model mniejszy i szybszy."
+  ],
+  "split": "val",
+  "candidates": [
+    {
+      "run_name": "resnet18_pretrained_A2",
+      "model": "resnet18",
+      "pretrained": true,
+      "aug": "A2",
+      "val_macro_f1": 0.996917,
+      "val_acc": 0.997328,
+      "mca": 0.933478,
+      "relative_drop": 0.064022,
+      "params": 11198571,
+      "cpu_latency_ms": 27.126
+    },
+    {
+      "run_name": "resnet18_pretrained_A1",
+      "model": "resnet18",
+      "pretrained": true,
+      "aug": "A1",
+      "val_macro_f1": 0.996362,
+      "val_acc": 0.997074,
+      "mca": 0.870975,
+      "relative_drop": 0.126468,
+      "params": 11198571,
+      "cpu_latency_ms": 27.152
+    },
+    {
+      "run_name": "resnet18_pretrained_A0",
+      "model": "resnet18",
+      "pretrained": true,
+      "aug": "A0",
+      "val_macro_f1": 0.99504,
+      "val_acc": 0.996692,
+      "mca": 0.873596,
+      "relative_drop": 0.123504,
+      "params": 11198571,
+      "cpu_latency_ms": 26.97
+    },
+    {
+      "run_name": "resnet18_scratch_A0",
+      "model": "resnet18",
+      "pretrained": false,
+      "aug": "A0",
+      "val_macro_f1": 0.986802,
+      "val_acc": 0.992494,
+      "mca": 0.869796,
+      "relative_drop": 0.123625,
+      "params": 11198571,
+      "cpu_latency_ms": 26.831
+    },
+    {
+      "run_name": "mobilenet_pretrained_A1",
+      "model": "mobilenet_v3_small",
+      "pretrained": true,
+      "aug": "A1",
+      "val_macro_f1": 0.980115,
+      "val_acc": 0.986896,
+      "mca": 0.806556,
+      "relative_drop": 0.182734,
+      "params": 1561931,
+      "cpu_latency_ms": 5.822
+    },
+    {
+      "run_name": "simple_cnn_scratch_A1",
+      "model": "simple_cnn",
+      "pretrained": false,
+      "aug": "A1",
+      "val_macro_f1": 0.97516,
+      "val_acc": 0.983842,
+      "mca": 0.794597,
+      "relative_drop": 0.192353,
+      "params": 293003,
+      "cpu_latency_ms": 3.488
+    },
+    {
+      "run_name": "mobilenet_pretrained_A0",
+      "model": "mobilenet_v3_small",
+      "pretrained": true,
+      "aug": "A0",
+      "val_macro_f1": 0.974494,
+      "val_acc": 0.982952,
+      "mca": 0.780229,
+      "relative_drop": 0.206239,
+      "params": 1561931,
+      "cpu_latency_ms": 5.396
+    },
+    {
+      "run_name": "mobilenet_pretrained_A2",
+      "model": "mobilenet_v3_small",
+      "pretrained": true,
+      "aug": "A2",
+      "val_macro_f1": 0.970117,
+      "val_acc": 0.982316,
+      "mca": 0.885352,
+      "relative_drop": 0.098709,
+      "params": 1561931,
+      "cpu_latency_ms": 6.174
+    },
+    {
+      "run_name": "simple_cnn_scratch_A2",
+      "model": "simple_cnn",
+      "pretrained": false,
+      "aug": "A2",
+      "val_macro_f1": 0.969515,
+      "val_acc": 0.981552,
+      "mca": 0.883893,
+      "relative_drop": 0.099494,
+      "params": 293003,
+      "cpu_latency_ms": 3.423
+    },
+    {
+      "run_name": "simple_cnn_scratch_A0",
+      "model": "simple_cnn",
+      "pretrained": false,
+      "aug": "A0",
+      "val_macro_f1": 0.95251,
+      "val_acc": 0.973537,
+      "mca": 0.763325,
+      "relative_drop": 0.215926,
+      "params": 293003,
+      "cpu_latency_ms": 3.548
+    },
+    {
+      "run_name": "mobilenet_scratch_A0",
+      "model": "mobilenet_v3_small",
+      "pretrained": false,
+      "aug": "A0",
+      "val_macro_f1": 0.933481,
+      "val_acc": 0.956361,
+      "mca": 0.758372,
+      "relative_drop": 0.207024,
+      "params": 1561931,
+      "cpu_latency_ms": 5.801
+    }
+  ],
+  "step1": {
+    "best_run": "resnet18_pretrained_A2",
+    "best_macro_f1": 0.996917,
+    "threshold_macro_f1": 0.986917,
+    "kept": [
+      "resnet18_pretrained_A0",
+      "resnet18_pretrained_A1",
+      "resnet18_pretrained_A2"
+    ],
+    "rejected": {
+      "simple_cnn_scratch_A0": "macro-F1 95,25%, o 4,44 p.p. poniżej najlepszego",
+      "resnet18_scratch_A0": "macro-F1 98,68%, o 1,01 p.p. poniżej najlepszego",
+      "mobilenet_scratch_A0": "macro-F1 93,35%, o 6,34 p.p. poniżej najlepszego",
+      "mobilenet_pretrained_A0": "macro-F1 97,45%, o 2,24 p.p. poniżej najlepszego",
+      "simple_cnn_scratch_A1": "macro-F1 97,52%, o 2,18 p.p. poniżej najlepszego",
+      "simple_cnn_scratch_A2": "macro-F1 96,95%, o 2,74 p.p. poniżej najlepszego",
+      "mobilenet_pretrained_A1": "macro-F1 98,01%, o 1,68 p.p. poniżej najlepszego",
+      "mobilenet_pretrained_A2": "macro-F1 97,01%, o 2,68 p.p. poniżej najlepszego"
+    }
+  },
+  "step2": {
+    "top_mca_run": "resnet18_pretrained_A2",
+    "top_mca": 0.933478,
+    "mca_ranking": [
+      {
+        "run_name": "resnet18_pretrained_A2",
+        "mca": 0.933478
+      },
+      {
+        "run_name": "resnet18_pretrained_A0",
+        "mca": 0.873596
+      },
+      {
+        "run_name": "resnet18_pretrained_A1",
+        "mca": 0.870975
+      }
+    ]
+  },
+  "step3": {
+    "tie_threshold_pp": 0.5,
+    "tied": [
+      {
+        "run_name": "resnet18_pretrained_A2",
+        "mca_gap_pp": 0.0,
+        "params": 11198571,
+        "cpu_latency_ms": 27.126
+      }
+    ],
+    "applied": false,
+    "note": "Żaden inny wariant nie ma mCA bliżej niż 0,5 p.p. od resnet18_pretrained_A2, krok 3 nie zmienia wyniku."
+  },
+  "winner": "resnet18_pretrained_A2",
+  "winner_config": {
+    "model": "resnet18",
+    "pretrained": true,
+    "aug": "A2"
+  },
+  "justification": "Krok 1: najlepsze macro-F1 ma resnet18_pretrained_A2 (99,69%); próg 98,69%, zostaje 3 z 11 wariantów. Krok 2: najwyższe mCA wśród nich ma resnet18_pretrained_A2 (93,35%). Krok 3: Żaden inny wariant nie ma mCA bliżej niż 0,5 p.p. od resnet18_pretrained_A2, krok 3 nie zmienia wyniku. Zwycięzca: resnet18_pretrained_A2 (macro-F1 99,69%, mCA 93,35%, 11 198 571 parametrów, 27,13 ms na CPU)."
+}

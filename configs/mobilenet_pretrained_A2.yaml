@@ -1,0 +1,10 @@
+run_name: mobilenet_pretrained_A2
+model: mobilenet_v3_small
+pretrained: true
+aug: A2
+seed: 42
+epochs: 20
+batch_size: 128
+lr: 0.001
+weight_decay: 0.0001
+patience: 5

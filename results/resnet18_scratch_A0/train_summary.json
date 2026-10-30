@@ -1,0 +1,7 @@
+{
+  "best_epoch": 20,
+  "best_val_macro_f1": 0.986802,
+  "epochs_run": 20,
+  "stopped_early": false,
+  "train_time_s": 582.9
+}

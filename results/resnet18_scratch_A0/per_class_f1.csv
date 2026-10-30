@@ -1,0 +1,44 @@
+class_id,class_name,precision,recall,f1,support
+0,Speed limit (20km/h),1.0,0.83333,0.90909,30
+1,Speed limit (30km/h),0.98468,1.0,0.99228,450
+2,Speed limit (50km/h),0.99778,1.0,0.99889,450
+3,Speed limit (60km/h),1.0,1.0,1.0,270
+4,Speed limit (70km/h),1.0,0.99744,0.99872,390
+5,Speed limit (80km/h),1.0,0.99444,0.99721,360
+6,End of speed limit (80km/h),1.0,0.96667,0.98305,90
+7,Speed limit (100km/h),0.99668,1.0,0.99834,300
+8,Speed limit (120km/h),1.0,1.0,1.0,270
+9,No passing,1.0,1.0,1.0,300
+10,No passing for vehicles over 3.5t,1.0,1.0,1.0,390
+11,Right-of-way at the next intersection,0.9854,1.0,0.99265,270
+12,Priority road,0.99762,1.0,0.99881,420
+13,Yield,0.99338,1.0,0.99668,450
+14,Stop,1.0,1.0,1.0,150
+15,No vehicles,1.0,0.95333,0.97611,150
+16,Vehicles over 3.5t prohibited,1.0,1.0,1.0,90
+17,No entry,1.0,1.0,1.0,210
+18,General caution,1.0,1.0,1.0,240
+19,Dangerous curve to the left,1.0,1.0,1.0,30
+20,Dangerous curve to the right,0.94828,0.91667,0.9322,60
+21,Double curve,1.0,1.0,1.0,90
+22,Bumpy road,1.0,1.0,1.0,90
+23,Slippery road,0.99174,1.0,0.99585,120
+24,Road narrows on the right,0.96667,0.96667,0.96667,60
+25,Road work,0.97403,1.0,0.98684,300
+26,Traffic signals,1.0,1.0,1.0,120
+27,Pedestrians,1.0,1.0,1.0,60
+28,Children crossing,1.0,1.0,1.0,120
+29,Bicycles crossing,1.0,1.0,1.0,30
+30,Beware of ice/snow,1.0,0.95556,0.97727,90
+31,Wild animals crossing,1.0,0.99333,0.99666,150
+32,End of all speed and passing limits,1.0,1.0,1.0,30
+33,Turn right ahead,1.0,1.0,1.0,120
+34,Turn left ahead,1.0,0.74444,0.8535,90
+35,Ahead only,0.9876,0.99583,0.9917,240
+36,Go straight or right,0.98901,1.0,0.99448,90
+37,Go straight or left,1.0,0.9,0.94737,30
+38,Keep right,0.94808,1.0,0.97335,420
+39,Keep left,1.0,0.96667,0.98305,60
+40,Roundabout mandatory,0.98361,1.0,0.99174,60
+41,End of no passing,1.0,1.0,1.0,60
+42,End of no passing by vehicles over 3.5t,1.0,1.0,1.0,60

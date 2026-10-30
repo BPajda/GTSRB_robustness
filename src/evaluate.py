@@ -2,11 +2,17 @@
 
     python -m src.evaluate --config configs/<run>.yaml [--smoke] [--force]
     python -m src.evaluate --run <run_name or results dir> [--force]
+    python -m src.evaluate --latency-only [--results-dir results/_smoke]
 
 Uses best.pt of the run. Computes on the validation set: accuracy, macro-F1,
 per_class_f1.csv, confusion_matrix.png, accuracy under each of the 15 corruptions
 (5 types x 3 levels), mCA, relative drop, parameter count and CPU latency
 (median of 100 single-image predictions after warm-up).
+
+--latency-only re-measures just cpu_latency_ms and cpu_latency_ms_1thread of every
+evaluated run directly under --results-dir (default results/, so results/_smoke/ is
+not included) and overwrites only these two keys of metrics.json: no training, no
+evaluation, only best.pt is loaded on CPU.
 
 The test set is locked: --split test also needs --i-know-this-is-final and writes
 separate *_test files. It is used once, in KM3, for the final models only.
@@ -29,8 +35,8 @@ from torch import nn
 from src.corruptions import CORRUPTIONS, LEVELS, CorruptedDataset
 from src.data import CLASS_NAMES, IMG_SIZE, NUM_CLASSES, cached_dataset, make_loader
 from src.models import build_model, count_params
-from src.train import EVAL_BATCH_SIZE, SMOKE_N_VAL, get_device, is_trained, load_config, macro_f1, \
-    precision_for, predict, results_root
+from src.train import EVAL_BATCH_SIZE, SMOKE_N_VAL, get_device, is_evaluated, is_trained, load_config, \
+    macro_f1, precision_for, predict, results_root
 
 LATENCY_WARMUP, LATENCY_REPEATS = 20, 100
 # Fixed thread count: with the default (24 on the i9-13900HX) small models get slower
@@ -192,11 +198,38 @@ def evaluate(out_dir: Path, split: str = "val", smoke: bool = False, force: bool
     return metrics
 
 
+def remeasure_latency(results_dir: Path) -> list[Path]:
+    """Re-measure CPU latency (LATENCY_THREADS and 1 thread) of every evaluated run in results_dir.
+
+    Only the run directories directly under results_dir are taken (so results/_smoke/ is
+    skipped for results/). Overwrites cpu_latency_ms and cpu_latency_ms_1thread in
+    metrics.json; all other keys, and their order, stay as they were.
+    """
+    run_dirs = [p for p in sorted(Path(results_dir).iterdir()) if is_trained(p) and is_evaluated(p)]
+    if not run_dirs:
+        raise FileNotFoundError(f"{results_dir} has no evaluated runs (best.pt + train_summary.json + metrics.json)")
+    for out_dir in run_dirs:
+        metrics_path = out_dir / "metrics.json"
+        metrics = json.loads(metrics_path.read_text(encoding="utf-8"))
+        old = metrics.get("cpu_latency_ms"), metrics.get("cpu_latency_ms_1thread")
+        model, _ = load_model(out_dir, torch.device("cpu"))
+        metrics["cpu_latency_ms"] = round(cpu_latency_ms(model), 3)
+        metrics["cpu_latency_ms_1thread"] = round(cpu_latency_ms(model, threads=1), 3)
+        metrics_path.write_text(json.dumps(metrics, indent=2) + "\n", encoding="utf-8")
+        print(f"[{out_dir.name}] CPU latency {LATENCY_THREADS} threads {old[0]} -> {metrics['cpu_latency_ms']} ms, "
+              f"1 thread {old[1]} -> {metrics['cpu_latency_ms_1thread']} ms")
+    return run_dirs
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Evaluate the best weights of a run on clean and corrupted data.")
     which = parser.add_mutually_exclusive_group(required=True)
     which.add_argument("--config", type=Path, help="run config (YAML); the run directory follows from run_name")
     which.add_argument("--run", help="run name (under results/ or results/_smoke/) or a run directory")
+    which.add_argument("--latency-only", action="store_true",
+                       help="only re-measure CPU latency of all evaluated runs in --results-dir")
+    parser.add_argument("--results-dir", type=Path, default=None,
+                        help="--latency-only: parent of the run directories (default: results/ or results/_smoke/)")
     parser.add_argument("--smoke", action="store_true", help="results/_smoke/ and ~500 validation images")
     parser.add_argument("--split", choices=("val", "test"), default="val")
     parser.add_argument("--i-know-this-is-final", dest="final", action="store_true",
@@ -206,6 +239,13 @@ def main() -> None:
 
     if args.split == "test" and not args.final:
         parser.error("the test set is locked until KM3; add --i-know-this-is-final to use it")
+    if args.latency_only:
+        if args.split != "val" or args.force:
+            parser.error("--latency-only only rewrites the latency keys of metrics.json (no --split/--force)")
+        remeasure_latency(results_root(args.smoke, args.results_dir))
+        return
+    if args.results_dir is not None:
+        parser.error("--results-dir is used with --latency-only")
     if args.config is not None:
         out_dir = results_root(args.smoke) / load_config(args.config)["run_name"]
     else:

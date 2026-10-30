@@ -1,0 +1,10 @@
+run_name: resnet18_pretrained_A2_s44
+model: resnet18
+pretrained: true
+aug: A2
+seed: 44
+epochs: 20
+batch_size: 128
+lr: 0.001
+weight_decay: 0.0001
+patience: 5

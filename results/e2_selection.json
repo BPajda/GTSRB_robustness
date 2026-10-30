@@ -1,0 +1,56 @@
+{
+  "rule": "Dla ResNet18 i MobileNetV3-Small do E2 przechodzi wariant z E1 (od zera albo ImageNet, A0) o wyższym macro-F1 na czystej walidacji. Przy remisie decyduje wyższe mCA.",
+  "split": "val",
+  "resnet18": {
+    "candidates": {
+      "resnet18_scratch_A0": {
+        "pretrained": false,
+        "val_macro_f1": 0.986802,
+        "val_acc": 0.992494,
+        "mca": 0.869796,
+        "best_epoch": 20
+      },
+      "resnet18_pretrained_A0": {
+        "pretrained": true,
+        "val_macro_f1": 0.99504,
+        "val_acc": 0.996692,
+        "mca": 0.873596,
+        "best_epoch": 15
+      }
+    },
+    "selected": "resnet18_pretrained_A0",
+    "pretrained": true,
+    "macro_f1_margin": 0.008238,
+    "reason": "pretrenowany (ImageNet): macro-F1 = 99,50%, uczony od zera: 98,68%, różnica 0,82 p.p. na korzyść wariantu resnet18_pretrained_A0."
+  },
+  "mobilenet_v3_small": {
+    "candidates": {
+      "mobilenet_scratch_A0": {
+        "pretrained": false,
+        "val_macro_f1": 0.933481,
+        "val_acc": 0.956361,
+        "mca": 0.758372,
+        "best_epoch": 16
+      },
+      "mobilenet_pretrained_A0": {
+        "pretrained": true,
+        "val_macro_f1": 0.974494,
+        "val_acc": 0.982952,
+        "mca": 0.780229,
+        "best_epoch": 9
+      }
+    },
+    "selected": "mobilenet_pretrained_A0",
+    "pretrained": true,
+    "macro_f1_margin": 0.041013,
+    "reason": "pretrenowany (ImageNet): macro-F1 = 97,45%, uczony od zera: 93,35%, różnica 4,10 p.p. na korzyść wariantu mobilenet_pretrained_A0."
+  },
+  "e2_runs": [
+    "simple_cnn_scratch_A1",
+    "simple_cnn_scratch_A2",
+    "resnet18_pretrained_A1",
+    "resnet18_pretrained_A2",
+    "mobilenet_pretrained_A1",
+    "mobilenet_pretrained_A2"
+  ]
+}
