@@ -1,4 +1,4 @@
-"""Grad-CAM, share of the CAM inside the sign ROI, confidence and the rejection threshold (KM3).
+"""Grad-CAM, share of the CAM inside the sign ROI, confidence and the rejection threshold.
 
     python -m src.xai [--smoke] [--batch-size 128]
 
@@ -965,7 +965,8 @@ def run_xai(smoke: bool = False, batch_size: int = BATCH_SIZE, report_split: str
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Grad-CAM, ROI energy, confidence and rejection threshold (KM3).")
+    parser = argparse.ArgumentParser(description="Grad-CAM, ROI energy, confidence and rejection threshold of the "
+                                                 "final model and the baseline.")
     parser.add_argument("--smoke", action="store_true",
                         help="1-epoch smoke models from results/_smoke/ on ~500 test/val images -> results/_smoke/xai/")
     parser.add_argument("--batch-size", type=int, default=BATCH_SIZE)

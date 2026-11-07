@@ -1,20 +1,10 @@
-# GTSRB_robustness – kontekst projektu
+# GTSRB_robustness – kontekst projektu dla asystenta kodu
 
-Projekt zaliczeniowy z przedmiotu „Sztuczna inteligencja w systemach informatycznych”.
-Temat: **Rozpoznawanie znaków drogowych z wykorzystaniem konwolucyjnych sieci neuronowych oraz analiza odporności modeli na zakłócenia obrazu.**
+Klasyfikacja znaków drogowych (GTSRB, 43 klasy) sieciami konwolucyjnymi i analiza ich odporności na zakłócenia obrazu: rozmycie, szum, przyciemnienie, zasłonięcie i kompresję JPEG. Projekt jest zakończony. Opis wyników jest w `README.md`, a pełne sprawozdanie w `reports/GTSRB_robustness_report_PL.pdf`.
 
-Pytanie badawcze: czy uczenie transferowe i odpowiednia augmentacja ograniczają spadek skuteczności klasyfikatora znaków na zakłóconych zdjęciach (rozmycie, szum, ciemność, zasłonięcie, kompresja JPEG)?
+## Dane
 
-Projekt ma 3 kamienie milowe (KM), każdy z osobnym sprawozdaniem w `docs/`:
-- **KM1** – problem, analiza datasetu, podział danych, plan eksperymentów (hipotezy, baseline, metryki)
-- **KM2** – implementacja, trening i porównanie wariantów (etapy E1–E4)
-- **KM3** – ocena na zbiorze testowym, XAI (Grad-CAM), aplikacja Gradio
-
-Podział pracy: Claude Code pisze kod i robi szybkie testy. Długie treningi uruchamia użytkownik. Analiza wyników i sprawozdania powstają osobno, na podstawie plików w `results/`.
-
-## Dane (zweryfikowane)
-
-Dataset GTSRB z Kaggle, rozpakowany do `data/` (folder poza gitem):
+Zbiór GTSRB z Kaggle, rozpakowany do `data/` (poza gitem):
 
 ```
 data/
@@ -22,113 +12,65 @@ data/
 ├── Test/<nnnnn>.png                              # 12 630 zdjęć
 ├── Meta/<ClassId>.png                            # wzorcowe piktogramy klas
 ├── Train.csv   # Width,Height,Roi.X1,Roi.Y1,Roi.X2,Roi.Y2,ClassId,Path
-├── Test.csv    # te same kolumny, etykiety testu są w ClassId
-└── Meta.csv    # Path,ClassId,ShapeId,ColorId,SignId
+├── Test.csv    # te same kolumny
+└── Meta.csv
 ```
 
-- Kolumna `Path` jest względna wobec `data/` (np. `Train/20/00020_00000_00000.png`).
-- **Serie (tracki):** nazwa pliku treningowego to `<class>_<track>_<frame>`. Jest 1 307 serii po ok. 30 niemal identycznych klatek tego samego fizycznego znaku. Identyfikator serii = `<class>_<track>`.
-- Nierównowaga klas: od 210 zdjęć (klasa 0, 7 serii) do 2 250 (klasa 2, 75 serii).
-- Rozmiary: od 25 do ok. 250 px, mediana 43 px.
-- Ramki `Roi.*` (położenie znaku na zdjęciu) są w Train i Test. Używamy ich w XAI (KM3), po przeskalowaniu do rozmiaru wejścia.
-- W `data/Meta/` są śmieciowe pliki `.~lock.*.ods#` z archiwum – ignorować.
+- `Path` w CSV jest względna wobec `data/`.
+- Zdjęcia treningowe tworzą serie (tracki): `<class>_<track>` to jeden fizyczny znak, ok. 30 niemal identycznych klatek, razem 1 307 serii.
+- Ramki `Roi.*` są używane w zakłóceniu „occlusion” i w analizie Grad-CAM, po przeskalowaniu do 64×64.
 
-## Zasady, których nie wolno łamać
+## Niezmienniki
 
-1. **Zbiór testowy (`Test/`) jest używany tylko raz, w KM3**, do oceny finalnego modelu i baseline'u. Nigdy do wyboru modelu, early stoppingu ani strojenia.
-2. **Walidacja jest wydzielana z `Train/` po seriach, nie po zdjęciach**: ok. 20% serii, stratyfikowane po klasie (`StratifiedGroupKFold`, groups = id serii), seed 42. Każda klasa musi mieć co najmniej 1 serię w walidacji. Podział zapisany raz do `splits/val_tracks.json` (w repo) i wczytywany przez wszystkie skrypty.
-3. **Żadnych odbić lustrzanych** (horizontal/vertical flip) w augmentacji – zmieniają znaczenie znaków (np. nakaz skrętu w lewo/prawo).
-4. Wejście sieci: **64×64 px, RGB, normalizacja ImageNet** – identycznie dla wszystkich modeli, żeby porównanie było uczciwe.
-5. Seed 42 wszędzie (Python, NumPy, PyTorch, DataLoader). Zakłócenia do ewaluacji są deterministyczne – każdy model widzi identyczne zakłócone obrazy.
-6. Nigdy nie commitować `data/` ani wag (`*.pt`). Wyniki (JSON/CSV/PNG) commitujemy.
+1. Zbiór testowy służy wyłącznie do jednorazowej oceny końcowej (`src/final_eval.py`). Ewaluacja na nim wymaga flagi `--i-know-this-is-final`. Nie używać go do wyboru modelu ani strojenia.
+2. Walidacja jest wydzielana z `Train/` po seriach (`StratifiedGroupKFold`, seed 42) i zapisana w `splits/val_tracks.json`. Wszystkie skrypty czytają ten plik.
+3. Augmentacje nie zawierają odbić lustrzanych (zmieniają znaczenie znaków) ani kompresji JPEG (zakłócenie testowe).
+4. Wejście wszystkich modeli: 64×64 px, RGB, normalizacja ImageNet.
+5. Seed 42 wszędzie, a zakłócenia są deterministyczne (`corruption_rng(seed, index, typ, poziom)`).
+6. `data/` i wagi (`*.pt`) nie trafiają do repozytorium. Wyniki (JSON/CSV/PNG) są w repo.
 
-## Plan eksperymentów (KM2)
+## Eksperymenty
 
-Modele (`src/models.py`):
-- `simple_cnn` – własny baseline: 3 bloki (Conv-BN-ReLU-MaxPool) + klasyfikator, tylko od zera
-- `resnet18` – torchvision, `scratch` lub `pretrained` (ImageNet)
-- `mobilenet_v3_small` – torchvision, `scratch` lub `pretrained`
-
-Augmentacje (`src/data.py`):
-- `A0` – brak (resize + normalizacja)
-- `A1` – geometryczna: obrót ±10°, przesunięcie/skala (RandomAffine), ColorJitter jasność/kontrast
-- `A2` – odpornościowa: A1 + GaussianBlur, szum Gaussa, przyciemnienie, RandomErasing
-
-Zakłócenia do ewaluacji (`src/corruptions.py`), 3 poziomy nasilenia (1 = słabe, 2 = średnie, 3 = silne):
-`gaussian_blur`, `gaussian_noise`, `darken`, `occlusion`, `jpeg`. **JPEG nigdy nie występuje w augmentacji treningowej** (test uogólnienia, hipoteza H4).
-
-Dokładne parametry poziomów (ustalone w KM1, nie zmieniać bez uzgodnienia):
+- Modele (`src/models.py`): `simple_cnn` (baseline), `resnet18`, `mobilenet_v3_small`, od zera albo z wagami ImageNet. ResNet18 i MobileNetV3 mają stride 1 w pierwszej konwolucji (ResNet18 także bez max poolingu), żeby ostatnia mapa cech miała 8×8 / 4×4.
+- Augmentacje (`src/data.py`): `A0` brak, `A1` geometryczna, `A2` odpornościowa (A1 + rozmycie, przyciemnienie, szum, RandomErasing).
+- Zakłócenia (`src/corruptions.py`), 3 poziomy:
 
 | typ | poziom 1 | poziom 2 | poziom 3 |
 | --- | --- | --- | --- |
 | gaussian_blur (sigma) | 0.8 | 2.0 | 3.0 |
 | gaussian_noise (sigma, obraz w [0,1]) | 0.03 | 0.06 | 0.10 |
 | darken (mnożnik jasności) | 0.6 | 0.4 | 0.25 |
-| occlusion (czarny prostokąt, % pola ROI, losowa pozycja wewnątrz ROI) | 10% | 20% | 30% |
+| occlusion (% pola ROI, wewnątrz ROI) | 10% | 20% | 30% |
 | jpeg (quality) | 30 | 15 | 8 |
 
-Pełny plan i uzasadnienia: `docs/plan_projektu.md`, `docs/KM1_sprawozdanie.md`.
+- Etapy (`src/run_experiments.py --stage e1…e5|all`): E1 architektura i transfer (A0), E2 augmentacja A1/A2, E3 ocena wszystkich 11 modeli na zakłóconej walidacji, E4 zwycięzca na 3 seedach, E5 strategie fine-tuningu zwycięzcy. Regułę wyboru zwycięzcy stosuje `select_e4()` i zapisuje uzasadnienie w `results/e4_selection.json`.
+- Finalny model: `resnet18_pretrained_A2` (seed 42). Aplikacja i XAI korzystają z tego runu.
+- Trening: AdamW, cosine, maks. 20 epok, early stopping na macro-F1 walidacji (patience 5), bf16 + channels_last na GPU.
+- Fine-tuning (klucze configu, domyślne w `DEFAULTS` w `src/train.py`): `finetune` = `full` (domyślnie, cała sieć z jednym lr), `linear` (tylko głowica, BatchNorm backbone'u w trybie eval), `discriminative` (backbone `backbone_lr`, głowica `lr`), `two_stage` (`freeze_epochs` epok jak `linear`, potem jak `discriminative`). Strategie inne niż `full` tylko dla modeli pretrenowanych. Wariant `full` musi dawać dokładnie te same wyniki co wcześniej.
+- Metryki: accuracy, macro-F1, mCA (średnia accuracy po 15 zakłóceniach), względny spadek, liczba parametrów, czas predykcji na CPU (4 wątki, mediana ze 100 powtórzeń).
 
-Etapy:
-- **E1**: simple_cnn + 4 warianty (resnet18/mobilenet × scratch/pretrained), wszystkie A0 → 5 runów
-- **E2**: simple_cnn + najlepszy resnet18 + najlepszy mobilenet z E1, każdy z A1 i A2 → 6 runów
-- **E3**: ewaluacja wszystkich 11 modeli na zakłóconej walidacji (bez treningu)
-- **E4**: zwycięzca, 3 seedy (42, 43, 44)
-
-Trening: AdamW, maks. 20 epok, early stopping na macro-F1 walidacji (patience 5), zapis najlepszych wag.
-
-Metryki: accuracy, macro-F1, mCA (średnia accuracy po 5 zakłóceniach × 3 poziomach), względny spadek `(acc_clean − mCA) / acc_clean`, liczba parametrów, czas predykcji 1 zdjęcia na CPU (ms, mediana ze 100 powtórzeń).
-
-## Struktura repo
+## Struktura
 
 ```
-GTSRB_robustness/
-├── CLAUDE.md
-├── README.md
-├── requirements.txt
-├── configs/            # YAML na każdy run
-├── splits/             # val_tracks.json
-├── notebooks/          # 01_eda.ipynb
-├── src/
-│   ├── data.py         # Dataset, podział, augmentacje
-│   ├── corruptions.py
-│   ├── models.py
-│   ├── train.py        # python -m src.train --config configs/<run>.yaml
-│   ├── evaluate.py     # czyste + zakłócone metryki
-│   ├── summarize.py    # tabela zbiorcza i wykresy porównawcze
-│   └── xai.py          # Grad-CAM, wskaźnik energii w ROI
-├── results/<run_name>/ # config.json, history.csv, metrics.json, confusion_matrix.png
-├── app/app.py          # Gradio
-└── docs/               # sprawozdania KM1, KM2, KM3
+src/        data, models, corruptions, train, evaluate, run_experiments, summarize, final_eval, xai, class_names_pl
+app/        app.py (Gradio, interfejs po polsku), assets/fonts (OFL)
+configs/    YAML na każdy trening
+splits/     val_tracks.json
+notebooks/  01_eda.ipynb
+results/    <run>/ (config.json, history.csv, metrics.json, per_class_f1.csv, confusion_matrix.png, best.pt poza gitem),
+            summary/, final_test/, xai/, eda/, corruptions/, e*_selection.json, e*_summary.json
+reports/    sprawozdania PDF (pełne + kamienie milowe)
+docs/img/   zrzuty ekranu aplikacji do README
 ```
-
-## Format wyników każdego runu
-
-`results/<run_name>/`:
-- `config.json` – pełna konfiguracja
-- `history.csv` – epoch, train_loss, val_loss, val_acc, val_macro_f1, czas epoki
-- `metrics.json` – `{"clean": {"acc", "macro_f1"}, "corrupted": {"<typ>": {"1": acc, "2": acc, "3": acc}}, "mca", "relative_drop", "params", "cpu_latency_ms", "best_epoch", "train_time_s"}`
-- `confusion_matrix.png`, `per_class_f1.csv`
-- `best.pt` – wagi (poza gitem)
 
 ## Środowisko
 
-- Windows, ścieżka projektu zawiera spacje – zawsze `pathlib.Path`, nigdy sklejanie stringów.
-- Wirtualne środowisko `.venv` w katalogu repo. Przed instalacją PyTorcha sprawdź `nvidia-smi`: jest karta NVIDIA → build z CUDA ze strony pytorch.org; brak → wersja CPU. Zapisz wybór w README.
-- DataLoader na Windows: kod uruchamiany pod `if __name__ == "__main__":`, `num_workers` 2–4, przy problemach 0.
-- Biblioteki: torch, torchvision, numpy, pandas, scikit-learn, matplotlib, seaborn, pyyaml, tqdm, pillow, grad-cam (pytorch-grad-cam), gradio, jupyter.
+- Python 3.12, PyTorch 2.14 (CUDA 13.2 albo CPU), biblioteki w `requirements.txt`.
+- Rozwijane na Windowsie, a ścieżka projektu może zawierać spacje: zawsze `pathlib.Path`. Kod z DataLoaderem pod `if __name__ == "__main__":`.
+- Skrypty treningu i ewaluacji (`train`, `evaluate`, `run_experiments`, `final_eval`, `xai`) mają tryb `--smoke` (1 epoka, mały podzbiór, wyniki w `results/_smoke/`); `summarize` czyta te wyniki przez `--results-dir results/_smoke`. Zmiany w kodzie treningu i ewaluacji sprawdzaj nim przed pełnym uruchomieniem. Długich treningów nie uruchamiaj bez prośby, podaj gotowe polecenie.
 
-## Sposób pracy
+## Konwencje
 
-- Kod, nazwy i komentarze w kodzie po angielsku. Sprawozdania i README po polsku.
-- Zanim użytkownik puści pełny trening: każdy skrypt sprawdzony szybkim testem (1 epoka, mały podzbiór, flaga `--smoke`).
-- Długich treningów nie uruchamiaj sam bez prośby – podaj gotowe polecenie.
-- Po każdym etapie krótko podsumuj, co powstało i jak to uruchomić.
-
-## Git – WAŻNE
-
-- **Nigdy nie wykonuj `git commit`, `git push`, `git reset`, `git rebase` ani innych poleceń zmieniających historię.** Commity robi wyłącznie użytkownik.
-- Możesz używać tylko poleceń do odczytu: `git status`, `git diff`, `git log`.
-- Na koniec zadania zaproponuj podział zmian na commity: które pliki do którego commita i gotowy komunikat.
-- Konwencja komunikatów: Conventional Commits, po angielsku, tryb rozkazujący, bez kropki na końcu, do ~72 znaków, np. `feat(data): add track-based train/val split`. Typy: `feat`, `fix`, `refactor`, `docs`, `chore`, `build`, `test`, `exp` (wyniki eksperymentów).
-- Nie dodawaj do komunikatów stopek typu `Co-Authored-By` ani podpisów.
+- Kod, nazwy i komentarze po angielsku. README, sprawozdania i interfejs aplikacji po polsku.
+- Commity wykonuje autor repozytorium. Asystent nie uruchamia `git commit`, `git push`, `git reset`, `git rebase` ani innych poleceń zmieniających historię. Może czytać stan (`git status`, `git diff`, `git log`) i zaproponować podział zmian na commity.
+- Komunikaty commitów: Conventional Commits, po angielsku, tryb rozkazujący, do ~72 znaków (np. `feat(data): add track-based train/val split`). Typy: `feat`, `fix`, `refactor`, `docs`, `chore`, `build`, `test`, `exp` (wyniki eksperymentów). Bez stopek typu `Co-Authored-By`.

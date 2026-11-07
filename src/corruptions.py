@@ -31,7 +31,8 @@ from src.data import CLASS_NAMES, IMAGENET_MEAN, IMAGENET_STD, IMG_SIZE, PROJECT
 
 CORRUPTIONS = ("gaussian_blur", "gaussian_noise", "darken", "occlusion", "jpeg")
 LEVELS = (1, 2, 3)
-# Fixed in KM1 (docs/KM1_sprawozdanie.md, section 5.4) - do not change.
+# Fixed in the experiment design, before any training (reports/GTSRB_robustness_report_PL.pdf,
+# section 5.4) - do not change.
 SEVERITY = {
     "gaussian_blur": {1: 0.8, 2: 2.0, 3: 3.0},       # sigma in pixels
     "gaussian_noise": {1: 0.03, 2: 0.06, 3: 0.10},   # sigma, image in [0, 1]

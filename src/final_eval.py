@@ -1,8 +1,8 @@
-"""Final evaluation on the test set (KM3): python -m src.final_eval [--smoke] [--force]
+"""Final evaluation on the test set: python -m src.final_eval [--smoke] [--force]
 
-Evaluates the three KM3 models on the 12 630 test images, clean and under the 15
-corruptions, with src.evaluate (the same metrics as on validation), and writes to
-results/final_test/:
+Evaluates the three compared models (final, baseline and reference, KM3_RUNS) on the
+12 630 test images, clean and under the 15 corruptions, with src.evaluate (the same
+metrics as on validation), and writes to results/final_test/:
     <run>/metrics_test.json, per_class_f1_test.csv, confusion_matrix_test.png,
           predictions_test.csv (path, label, pred of the clean test set)
     comparison.csv       validation vs test: acc, macro-F1, mCA, relative drop, and val - test
@@ -37,18 +37,18 @@ from src.evaluate import evaluate  # noqa: E402
 from src.summarize import INK_2, UNSEEN_BG, pct_axis  # noqa: E402
 from src.train import results_root  # noqa: E402
 
-FINAL_RUN = "resnet18_pretrained_A2"      # winner of the KM1 selection rule (results/e4_selection.json), seed 42
-BASELINE_RUN = "simple_cnn_scratch_A0"    # baseline fixed in KM1
+FINAL_RUN = "resnet18_pretrained_A2"      # winner of the model selection rule (results/e4_selection.json), seed 42
+BASELINE_RUN = "simple_cnn_scratch_A0"    # baseline fixed in the experiment design, before any training
 REFERENCE_RUN = "resnet18_pretrained_A0"  # the final network without augmentation: effect of A2 on the test set
-KM3_RUNS = (FINAL_RUN, BASELINE_RUN, REFERENCE_RUN)
+KM3_RUNS = (FINAL_RUN, BASELINE_RUN, REFERENCE_RUN)  # evaluated on the test set (milestone 3: final evaluation)
 RUN_ROLES = {FINAL_RUN: "final", BASELINE_RUN: "baseline", REFERENCE_RUN: "reference"}
 RUN_LABELS = {
     FINAL_RUN: "ResNet18 · ImageNet · A2 (finalny)",
     BASELINE_RUN: "SimpleCNN · od zera · A0 (baseline)",
     REFERENCE_RUN: "ResNet18 · ImageNet · A0 (bez augmentacji)",
 }
-# Categorical slots 1-3 of the reference palette (validated all-pairs); ResNet18 keeps its KM2 orange
-# and SimpleCNN its KM2 blue, the reference run takes slot 3.
+# Categorical slots 1-3 of the reference palette (validated all-pairs); ResNet18 keeps its orange and
+# SimpleCNN its blue from the validation plots (results/summary/), the reference run takes slot 3.
 RUN_COLORS = {FINAL_RUN: "#eb6834", BASELINE_RUN: "#2a78d6", REFERENCE_RUN: "#1baf7a"}
 RUN_MARKERS = {FINAL_RUN: "^", BASELINE_RUN: "o", REFERENCE_RUN: "s"}
 FINAL_TEST_DIR = "final_test"
@@ -61,7 +61,7 @@ def fmt_int(n: int) -> str:
 
 
 def check_final_run(root: Path) -> None:
-    """FINAL_RUN must be the winner recorded when the KM1 rule was applied on validation."""
+    """FINAL_RUN must be the winner recorded when the selection rule was applied on validation (E4)."""
     path = root / "e4_selection.json"
     if not path.exists():
         raise FileNotFoundError(f"{path} not found - the final model is chosen in E4 (src.run_experiments)")
@@ -186,7 +186,7 @@ def plot_robustness_test(val: dict, test: dict, path: Path) -> None:
     handles = [Line2D([], [], color=RUN_COLORS[r], marker=RUN_MARKERS[r], lw=2, label=RUN_LABELS[r])
                for r in KM3_RUNS]
     handles += [Line2D([], [], color=INK_2, lw=2, label="zbiór testowy"),
-                Line2D([], [], color=INK_2, lw=1.1, ls=(0, (3, 2)), label="walidacja (KM2)")]
+                Line2D([], [], color=INK_2, lw=1.1, ls=(0, (3, 2)), label="walidacja")]
     fig.legend(handles=handles, loc="lower center", ncol=5, bbox_to_anchor=(0.5, -0.02), fontsize=8.5)
     n_test = next(iter(test.values()))["n_images"]
     fig.suptitle(f"Accuracy na zbiorze testowym (n = {fmt_int(n_test)}) w zależności od poziomu zakłócenia "
@@ -227,7 +227,8 @@ def final_eval(smoke: bool = False, force: bool = False) -> dict[str, dict]:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Evaluate the KM3 models once on the clean and corrupted test set.")
+    parser = argparse.ArgumentParser(description="Evaluate the final, baseline and reference models once on the "
+                                                 "clean and corrupted test set.")
     parser.add_argument("--smoke", action="store_true",
                         help="1-epoch smoke models from results/_smoke/ on ~500 test images -> results/_smoke/")
     parser.add_argument("--force", action="store_true", help="recompute test metrics that already exist")

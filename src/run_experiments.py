@@ -1,12 +1,15 @@
-"""Run the KM2 experiment plan: python -m src.run_experiments --stage e1|e2|e3|e4|all [--smoke]
+"""Run the experiment plan: python -m src.run_experiments --stage e1|e2|e3|e4|e5|all [--smoke]
 
 E1: simple_cnn + resnet18 / mobilenet_v3_small x scratch / ImageNet, all A0 (5 runs).
 E2: simple_cnn and the better resnet18 and mobilenet variant of E1 (higher validation
     macro-F1), each with A1 and A2 (6 runs); the choice -> results/e2_selection.json.
 E3: make sure all 11 runs have complete clean + corrupted validation metrics.
-E4: pick the winner of the 11 runs with the rule fixed in KM1 (docs/KM1_sprawozdanie.md,
-    section 5.7) -> results/e4_selection.json, train it with seeds 43 and 44 and
-    summarize the 3 seeds -> results/e4_summary.json.
+E4: pick the winner of the 11 runs with the rule fixed before any training
+    (reports/GTSRB_robustness_report_PL.pdf, section 5.7) -> results/e4_selection.json,
+    train it with seeds 43 and 44 and summarize the 3 seeds -> results/e4_summary.json.
+E5: fine-tuning strategies of ImageNet ResNet18 with A2, seed 42: linear, discriminative
+    and two_stage (3 runs, see src/train.py); the reference "full" is the existing E2 run
+    resnet18_pretrained_A2 (not retrained). Validation only -> results/e5_summary.json.
 
 Configs are written to configs/<run>.yaml (an existing config is reused as is).
 Finished runs are skipped, so an interrupted stage can simply be started again.
@@ -29,14 +32,20 @@ from src.evaluate import evaluate, metrics_complete
 from src.train import DEFAULTS, load_config, results_root, save_config, train
 
 CONFIGS_DIR = PROJECT_ROOT / "configs"
-STAGES = ("e1", "e2", "e3", "e4")
+STAGES = ("e1", "e2", "e3", "e4", "e5")
 SHORT_NAMES = {"simple_cnn": "simple_cnn", "resnet18": "resnet18", "mobilenet_v3_small": "mobilenet"}
 E1_VARIANTS = [("simple_cnn", False), ("resnet18", False), ("resnet18", True),
                ("mobilenet_v3_small", False), ("mobilenet_v3_small", True)]
 E2_AUGS = ("A1", "A2")
 BASE_SEED, E4_SEEDS = 42, (43, 44)
+E5_BASE = ("resnet18", True, "A2")  # model, pretrained, aug (seed BASE_SEED)
+E5_STRATEGIES = ("linear", "discriminative", "two_stage")  # "full" = the existing run of E5_BASE
+# keys that must match between the E5 runs and the reference, so that only the fine-tuning differs
+E5_SHARED_KEYS = ("model", "pretrained", "aug", "seed", "epochs", "batch_size", "lr", "weight_decay", "patience")
 F1_MARGIN = 0.01   # rule step 1: drop variants more than 1 p.p. of macro-F1 below the best
 MCA_TIE = 0.005    # rule step 3: mCA differences below 0.5 p.p. are a tie
+# The selection rule as fixed in milestone 1 (experiment design, before any training);
+# saved verbatim as "rule_km1" in results/e4_selection.json.
 RULE_KM1 = [
     "1. Odrzucamy warianty, których macro-F1 na czystej walidacji jest niższe od najlepszego "
     "o więcej niż 1 p.p.",
@@ -201,7 +210,7 @@ def stage_e3(plan: Plan) -> None:
 # ---------------------------------------------------------------------------
 
 def select_e4(plan: Plan) -> dict:
-    """Winner of the 11 runs with the KM1 rule (section 5.7)."""
+    """Winner of the 11 runs with the selection rule fixed before training (RULE_KM1, report section 5.7)."""
     rows = []
     for name in eleven_runs(plan):
         m, c = plan.metrics(name), plan.run_config(name)
@@ -329,8 +338,85 @@ def stage_e4(plan: Plan) -> None:
           f"mCA {mean['mca']:.4f} ± {std['mca']:.4f}")
 
 
+# ---------------------------------------------------------------------------
+# E5
+# ---------------------------------------------------------------------------
+
+def e5_configs() -> list[dict]:
+    base = make_config(*E5_BASE)
+    return [{**base, "run_name": f"{base['run_name']}_{s}", "finetune": s} for s in E5_STRATEGIES]
+
+
+def e5_row(plan: Plan, name: str) -> dict:
+    """Validation metrics and fine-tuning setup of one E5 variant."""
+    m, c = plan.metrics(name), plan.run_config(name)
+    ts = json.loads((plan.root / name / "train_summary.json").read_text(encoding="utf-8"))
+    strategy = c.get("finetune", "full")  # runs from before E5 have no finetune keys: full
+    return {
+        "run_name": name,
+        "finetune": strategy,
+        "lr": c["lr"],
+        "backbone_lr": c["backbone_lr"] if strategy in ("discriminative", "two_stage") else None,
+        "freeze_epochs": c.get("freeze_epochs_effective", c["freeze_epochs"]) if strategy == "two_stage" else None,
+        "acc": m["clean"]["acc"],
+        "macro_f1": m["clean"]["macro_f1"],
+        "mca": m["mca"],
+        "relative_drop": m["relative_drop"],
+        **{f"acc_{ct}": round(float(np.mean(list(m["corrupted"][ct].values()))), 6) for ct in CORRUPTIONS},
+        "best_epoch": m["best_epoch"],
+        "epochs_run": ts["epochs_run"],
+        "train_time_s": m["train_time_s"],
+        "trainable_params": c.get("trainable_params", m["params"]) if strategy == "full" else c["trainable_params"],
+        "params": m["params"],
+    }
+
+
+def check_e5_reference(plan: Plan, reference: str, cfgs: list[dict]) -> None:
+    """The reference must be a complete "full" run with the same setup as the E5 runs."""
+    m = plan.metrics(reference)
+    if not metrics_complete(m):
+        raise ValueError(f"{reference}: incomplete metrics.json - run --stage e3 first")
+    ref = plan.run_config(reference)
+    if ref.get("finetune", "full") != "full":
+        raise ValueError(f"{reference} is not a full fine-tuning run")
+    for cfg in cfgs:
+        diff = {k: (ref[k], cfg[k]) for k in E5_SHARED_KEYS if ref[k] != cfg[k]}
+        if diff:
+            raise ValueError(f"{cfg['run_name']} differs from the reference {reference} in more than the "
+                             f"fine-tuning: {diff}")
+
+
+def stage_e5(plan: Plan) -> None:
+    reference = run_name(*E5_BASE)
+    if plan.smoke:  # the smoke plan may not have the reference yet; a smoke run is cheap
+        plan.run(make_config(*E5_BASE))
+    cfgs = [plan.config(cfg) for cfg in e5_configs()]
+    check_e5_reference(plan, reference, cfgs)
+    runs = {"full": reference}
+    for cfg in cfgs:
+        plan.run(cfg)
+        runs[cfg["finetune"]] = cfg["run_name"]
+    rows = {s: e5_row(plan, name) for s, name in runs.items()}
+    full = rows["full"]
+    summary = {
+        "split": "val",
+        "base": dict(zip(("model", "pretrained", "aug"), E5_BASE), seed=BASE_SEED),
+        "reference": f"full = {reference} (run z etapu E2, nie trenowany ponownie)",
+        "strategies": list(runs),
+        "runs": runs,
+        "per_strategy": rows,
+        "diff_vs_full": {s: {k: round(r[k] - full[k], 6) for k in ("acc", "macro_f1", "mca", "relative_drop")}
+                         for s, r in rows.items() if s != "full"},
+    }
+    plan.write_json("e5_summary.json", summary)
+    print(f"{'strategy':<15} {'trainable':>11} {'acc':>7} {'F1':>7} {'mCA':>7} {'drop':>7} {'best':>5} {'time':>7}")
+    for s, r in rows.items():
+        print(f"{s:<15} {r['trainable_params']:>11,} {r['acc']:7.4f} {r['macro_f1']:7.4f} {r['mca']:7.4f} "
+              f"{r['relative_drop']:7.4f} {r['best_epoch']:>5} {r['train_time_s']:>6.0f}s")
+
+
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Run the KM2 experiment stages E1-E4.")
+    parser = argparse.ArgumentParser(description="Run the experiment stages E1-E5.")
     parser.add_argument("--stage", choices=(*STAGES, "all"), required=True)
     parser.add_argument("--smoke", action="store_true", help="1-epoch smoke runs in results/_smoke/")
     args = parser.parse_args()
@@ -342,7 +428,7 @@ def main() -> None:
     t0 = time.perf_counter()
     for stage in stages:
         print(f"===== {stage.upper()} =====")
-        {"e1": stage_e1, "e2": stage_e2, "e3": stage_e3, "e4": stage_e4}[stage](plan)
+        {"e1": stage_e1, "e2": stage_e2, "e3": stage_e3, "e4": stage_e4, "e5": stage_e5}[stage](plan)
     print(f"finished {', '.join(s.upper() for s in stages)} in {(time.perf_counter() - t0) / 60:.1f} min")
 
 

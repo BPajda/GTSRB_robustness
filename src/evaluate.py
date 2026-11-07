@@ -15,8 +15,8 @@ not included) and overwrites only these two keys of metrics.json: no training, n
 evaluation, only best.pt is loaded on CPU.
 
 The test set is locked: --split test also needs --i-know-this-is-final and writes
-separate *_test files. It is used once, in KM3, for the final models only
-(through src.final_eval, which writes them to results/final_test/<run>/).
+separate *_test files. It is used once, for the final models only, in the final
+evaluation (src.final_eval, which writes them to results/final_test/<run>/).
 """
 
 from __future__ import annotations
@@ -145,7 +145,8 @@ def evaluate(out_dir: Path, split: str = "val", smoke: bool = False, force: bool
     save_predictions: also write predictions(_test).csv (path, label, pred) of the clean data.
     """
     if split == "test" and not final:
-        raise PermissionError("the test set is used once, in KM3: pass final=True / --i-know-this-is-final")
+        raise PermissionError("the test set is used once, in the final evaluation (src.final_eval): "
+                              "pass final=True / --i-know-this-is-final")
     out_dir = Path(out_dir)
     if not is_trained(out_dir):
         raise FileNotFoundError(f"{out_dir} has no finished training (best.pt + train_summary.json)")
@@ -243,12 +244,12 @@ def main() -> None:
     parser.add_argument("--smoke", action="store_true", help="results/_smoke/ and ~500 validation images")
     parser.add_argument("--split", choices=("val", "test"), default="val")
     parser.add_argument("--i-know-this-is-final", dest="final", action="store_true",
-                        help="unlock --split test (KM3 only, final models only)")
+                        help="unlock --split test (only for the final evaluation of the final models)")
     parser.add_argument("--force", action="store_true", help="recompute even if metrics exist")
     args = parser.parse_args()
 
     if args.split == "test" and not args.final:
-        parser.error("the test set is locked until KM3; add --i-know-this-is-final to use it")
+        parser.error("the test set is reserved for the final evaluation; add --i-know-this-is-final to use it")
     if args.latency_only:
         if args.split != "val" or args.force:
             parser.error("--latency-only only rewrites the latency keys of metrics.json (no --split/--force)")

@@ -10,6 +10,8 @@ Writes summary.csv (every run with metrics.json, E4 seed repeats included) and P
     robustness_curves.png    accuracy vs corruption level, A0/A1/A2 per architecture (H2, H4)
     params_vs_f1.png         parameter count (log) vs macro-F1 (H3)
     corruption_heatmap.png   variant x corruption, accuracy averaged over levels
+    e5_finetuning.png        E5: macro-F1 and mCA of the 4 fine-tuning strategies + their learning
+                             curves (only when e5_summary.json exists)
 """
 
 from __future__ import annotations
@@ -41,6 +43,18 @@ AUG_JITTER = {"A0": 0.93, "A1": 1.0, "A2": 1.075}  # horizontal offset factor on
 SCRATCH_COLOR = "#898781"
 INK, INK_2, GRID, AXIS = "#0b0b0b", "#52514e", "#e1e0d9", "#c3c2b7"
 UNSEEN_BG = "#f0efec"
+# E5: the reference (full) in neutral ink, the three compared strategies in categorical slots 1-3
+# (validated all-pairs with the reference: CVD dE >= 9.2, normal-vision dE >= 21.8; slot 3 is below
+# 3:1 contrast, so every series also gets a marker and a direct label).
+FINETUNE_ORDER = ("full", "linear", "discriminative", "two_stage")
+FINETUNE_COLORS = {"full": INK_2, "linear": "#2a78d6", "discriminative": "#eb6834", "two_stage": "#1baf7a"}
+FINETUNE_MARKERS = {"full": "o", "linear": "s", "discriminative": "^", "two_stage": "D"}
+FINETUNE_LABELS = {
+    "full": "full – cała sieć, jedno lr (odniesienie)",
+    "linear": "linear – tylko głowica, backbone zamrożony",
+    "discriminative": "discriminative – cała sieć, niższe lr backbone'u",
+    "two_stage": "two_stage – najpierw głowica, potem cała sieć",
+}
 
 plt.rcParams.update({
     "font.size": 9,
@@ -66,6 +80,8 @@ plt.rcParams.update({
 # ---------------------------------------------------------------------------
 
 def stage_of(cfg: dict) -> str:
+    if cfg.get("finetune", "full") != "full":
+        return "E5"
     if cfg["seed"] != 42:
         return "E4"
     return "E1" if cfg["aug"] == "A0" else "E2"
@@ -73,7 +89,8 @@ def stage_of(cfg: dict) -> str:
 
 def variant_label(row) -> str:
     init = "ImageNet" if row["pretrained"] else "od zera"
-    return f"{MODEL_LABELS[row['model']]} · {init} · {row['aug']}"
+    label = f"{MODEL_LABELS[row['model']]} · {init} · {row['aug']}"
+    return label if row["finetune"] == "full" else f"{label} · {row['finetune']}"
 
 
 def collect_runs(root: Path) -> pd.DataFrame:
@@ -92,6 +109,7 @@ def collect_runs(root: Path) -> pd.DataFrame:
             "model": cfg["model"],
             "pretrained": bool(cfg["pretrained"]),
             "aug": cfg["aug"],
+            "finetune": cfg.get("finetune", "full"),  # runs from before E5 have no finetune key
             "seed": cfg["seed"],
             "best_epoch": m["best_epoch"],
             "epochs_run": ts.get("epochs_run"),
@@ -114,7 +132,9 @@ def collect_runs(root: Path) -> pd.DataFrame:
         raise FileNotFoundError(f"no runs with metrics.json in {root}")
     df = pd.DataFrame(rows)
     df["_order"] = df["model"].map(MODEL_ORDER.index)
-    df = df.sort_values(["seed", "_order", "pretrained", "aug"]).drop(columns="_order").reset_index(drop=True)
+    df["_ft"] = df["finetune"].map(FINETUNE_ORDER.index)
+    df = df.sort_values(["seed", "_order", "pretrained", "aug", "_ft"]).drop(columns=["_order", "_ft"])
+    df = df.reset_index(drop=True)
     df["label"] = df.apply(variant_label, axis=1)
     return df
 
@@ -346,9 +366,96 @@ def plot_corruption_heatmap(df: pd.DataFrame, path: Path) -> None:
     plt.close(fig)
 
 
+def pl_num(v: float, digits: int = 2) -> str:
+    return f"{v:.{digits}f}".replace(".", ",").replace("-", "−")
+
+
+def plot_e5_finetuning(root: Path, path: Path) -> None:
+    """E5: clean macro-F1 and mCA of the 4 fine-tuning strategies (top) and their learning curves (bottom)."""
+    summary = json.loads((root / "e5_summary.json").read_text(encoding="utf-8"))
+    rows = summary["per_strategy"]
+    strategies = [s for s in FINETUNE_ORDER if s in rows]
+    fig = plt.figure(figsize=(11, 8.2))
+    grid = fig.add_gridspec(2, 2, height_ratios=(0.45 * len(strategies) + 0.9, 4.2), hspace=0.42, wspace=0.05)
+
+    # Top: bars, one panel per metric (same style as f1_mca_bars), first strategy on top
+    ypos = np.arange(len(strategies))[::-1]
+    bar_axes = [fig.add_subplot(grid[0, 0])]
+    bar_axes.append(fig.add_subplot(grid[0, 1], sharey=bar_axes[0]))
+    full = rows.get("full")
+    for ax, col, title in ((bar_axes[0], "macro_f1", "Macro-F1 na czystej walidacji"),
+                           (bar_axes[1], "mca", "mCA – średnia accuracy po 15 zakłóceniach")):
+        for y, s in zip(ypos, strategies):
+            v = rows[s][col] * 100
+            ax.barh(y, v, height=0.72, color=FINETUNE_COLORS[s], edgecolor="white", linewidth=1.5)
+            text = f"{pl_num(v)}%"
+            if full is not None and s != "full":
+                text += f"  ({'+' if v >= full[col] * 100 else ''}{pl_num(v - full[col] * 100)} p.p.)"
+            ax.text(v + 0.8, y, text, va="center", fontsize=8, color=INK)
+        ax.set_xlim(0, 142)  # room for "99,58%  (−0,11 p.p.)" next to a full-length bar
+        ax.set_xticks(range(0, 101, 20))
+        pct_axis(ax, "x")
+        ax.grid(axis="y", visible=False)
+        ax.set_title(title)
+    ticklabels = [f"{s}\n{rows[s]['trainable_params']:,} param. trenowalnych".replace(",", " ") for s in strategies]
+    bar_axes[0].set_yticks(ypos, ticklabels)
+    bar_axes[1].tick_params(axis="y", labelleft=False)
+
+    # Bottom: validation macro-F1 per epoch
+    ax = fig.add_subplot(grid[1, :])
+    max_epoch, ends = 1, []
+    for s in strategies:
+        r = rows[s]
+        hist = pd.read_csv(root / r["run_name"] / "history.csv")
+        y = hist["val_macro_f1"] * 100
+        max_epoch = max(max_epoch, int(hist["epoch"].max()))
+        color = FINETUNE_COLORS[s]
+        ax.plot(hist["epoch"], y, color=color, lw=2, marker=FINETUNE_MARKERS[s], ms=5, mec="white", mew=0.8,
+                label=FINETUNE_LABELS[s], zorder=3)
+        best = hist.loc[hist["epoch"] == r["best_epoch"]]
+        ax.plot(best["epoch"], best["val_macro_f1"] * 100, marker="*", ms=14, color=color, mec="white", mew=0.8,
+                ls="none", zorder=4)
+        ends.append((s, int(hist["epoch"].iloc[-1]), float(y.iloc[-1])))
+    y_all = np.concatenate([pd.read_csv(root / rows[s]["run_name"] / "history.csv")["val_macro_f1"].to_numpy()
+                            for s in strategies]) * 100
+    lo = max(0.0, np.floor((y_all.min() - 2) / 5) * 5)
+    ax.set_ylim(lo, 100.5)
+    span = 100.5 - lo
+    # direct labels in the right margin (runs stop at different epochs), pushed apart so they do not overlap
+    # and kept inside the axes (the curves of good strategies all end near 100%)
+    label_y = np.array(spread_labels([e[2] for e in ends], min_gap=span * 0.045))
+    label_y -= max(0.0, label_y.max() - (100.5 - span * 0.02))
+    for (s, x_end, y_end), y_lab in zip(ends, label_y):
+        ax.annotate(s, (x_end, y_end), xytext=(max_epoch + 0.6, y_lab), textcoords="data", va="center",
+                    fontsize=8, color=INK, arrowprops={"arrowstyle": "-", "color": AXIS, "lw": 0.6})
+    handles = [Line2D([], [], color=FINETUNE_COLORS[s], marker=FINETUNE_MARKERS[s], lw=2, ms=6,
+                      label=FINETUNE_LABELS[s]) for s in strategies]
+    if "two_stage" in rows and rows["two_stage"]["freeze_epochs"]:
+        n_frozen = rows["two_stage"]["freeze_epochs"]
+        unfreeze_style = {"color": INK_2, "lw": 1, "ls": (0, (4, 3))}
+        ax.axvline(n_frozen + 0.5, zorder=1, **unfreeze_style)
+        handles.append(Line2D([], [], **unfreeze_style,
+                              label=f"two_stage: odmrożenie backbone'u po {n_frozen}. epoce"))
+    ax.set_xlim(0.5, max_epoch + 2.6)
+    ax.set_xticks(range(1, max_epoch + 1, 1 if max_epoch <= 10 else 2))
+    ax.set_xlabel("Epoka")
+    ax.set_ylabel("Macro-F1 na walidacji")
+    pct_axis(ax)
+    ax.set_title("Krzywe uczenia (★ = najlepsza epoka, z niej zapisano wagi)")
+    fig.legend(handles=handles, loc="lower center", ncol=2, bbox_to_anchor=(0.5, -0.005),
+               title="Strategia fine-tuningu")
+    base = summary["base"]
+    fig.suptitle(f"E5: strategie fine-tuningu – {MODEL_LABELS[base['model']]} "
+                 f"({'ImageNet' if base['pretrained'] else 'od zera'}), {base['aug']}, seed {base['seed']}, "
+                 f"walidacja", fontsize=11)
+    fig.subplots_adjust(left=0.2, right=0.97, top=0.92, bottom=0.17)
+    fig.savefig(path, dpi=150, bbox_inches="tight")
+    plt.close(fig)
+
+
 def plan_variants(df: pd.DataFrame, root: Path) -> pd.DataFrame:
     """The 11 planned variants (E1 + the E2 runs in e2_selection.json); all seed-42 runs before E2."""
-    seed42 = df[df["seed"] == 42]
+    seed42 = df[(df["seed"] == 42) & (df["finetune"] == "full")]
     selection = root / "e2_selection.json"
     if not selection.exists():
         return seed42.reset_index(drop=True)
@@ -369,6 +476,10 @@ def summarize(root: Path = RESULTS_DIR, out_dir: Path | None = None) -> pd.DataF
     plot_robustness_curves(variants, out_dir / "robustness_curves.png")
     plot_params_vs_f1(variants, out_dir / "params_vs_f1.png")
     plot_corruption_heatmap(variants, out_dir / "corruption_heatmap.png")
+    if (root / "e5_summary.json").exists():
+        plot_e5_finetuning(root, out_dir / "e5_finetuning.png")
+    else:
+        print(f"no {root / 'e5_summary.json'}, skipping e5_finetuning.png (run --stage e5 first)")
     print(f"{len(df)} runs ({len(variants)} variants in the plots) -> {out_dir}")
     with pd.option_context("display.width", 160, "display.max_columns", 20):
         print(df[["run_name", "stage", "best_epoch", "acc", "macro_f1", "mca", "relative_drop", "params",

@@ -98,6 +98,55 @@ def count_params(model: nn.Module) -> int:
     return sum(p.numel() for p in model.parameters())
 
 
+def count_trainable_params(model: nn.Module) -> int:
+    return sum(p.numel() for p in model.parameters() if p.requires_grad)
+
+
+# ---------------------------------------------------------------------------
+# Fine-tuning: head / backbone split of the torchvision models
+# ---------------------------------------------------------------------------
+
+def head_module(model: nn.Module) -> nn.Linear:
+    """The fresh classification layer created by build_model (ResNet `fc`, MobileNetV3 `classifier[-1]`)."""
+    if isinstance(model, tvm.ResNet):
+        return model.fc
+    if isinstance(model, tvm.MobileNetV3):
+        return model.classifier[-1]
+    raise TypeError(f"no pretrained backbone / head split for {type(model).__name__} "
+                    f"(only resnet18 and mobilenet_v3_small)")
+
+
+def head_parameters(model: nn.Module) -> list[nn.Parameter]:
+    return list(head_module(model).parameters())
+
+
+def backbone_parameters(model: nn.Module) -> list[nn.Parameter]:
+    """Every parameter outside the head (for MobileNetV3 this includes classifier[0], the 576 -> 1024 layer)."""
+    head = {id(p) for p in head_parameters(model)}
+    return [p for p in model.parameters() if id(p) not in head]
+
+
+def set_backbone_trainable(model: nn.Module, trainable: bool) -> None:
+    for p in backbone_parameters(model):
+        p.requires_grad_(trainable)
+
+
+def set_train_mode(model: nn.Module) -> nn.Module:
+    """model.train(), except BatchNorm layers whose parameters are all frozen, which stay in eval mode.
+
+    A frozen backbone then keeps its ImageNet running statistics (and num_batches_tracked)
+    instead of re-estimating them on GTSRB batches. With no frozen parameters this is
+    exactly model.train().
+    """
+    model.train()
+    for m in model.modules():
+        if isinstance(m, nn.modules.batchnorm._BatchNorm):
+            params = list(m.parameters())
+            if params and not any(p.requires_grad for p in params):
+                m.eval()
+    return model
+
+
 @torch.no_grad()
 def output_shape(module: nn.Module, model: nn.Module, size: int = IMG_SIZE) -> tuple[int, ...]:
     """Shape (C, H, W) of `module`'s output when `model` runs on one size x size image."""

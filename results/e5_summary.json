@@ -1,0 +1,128 @@
+{
+  "split": "val",
+  "base": {
+    "model": "resnet18",
+    "pretrained": true,
+    "aug": "A2",
+    "seed": 42
+  },
+  "reference": "full = resnet18_pretrained_A2 (run z etapu E2, nie trenowany ponownie)",
+  "strategies": [
+    "full",
+    "linear",
+    "discriminative",
+    "two_stage"
+  ],
+  "runs": {
+    "full": "resnet18_pretrained_A2",
+    "linear": "resnet18_pretrained_A2_linear",
+    "discriminative": "resnet18_pretrained_A2_discriminative",
+    "two_stage": "resnet18_pretrained_A2_two_stage"
+  },
+  "per_strategy": {
+    "full": {
+      "run_name": "resnet18_pretrained_A2",
+      "finetune": "full",
+      "lr": 0.001,
+      "backbone_lr": null,
+      "freeze_epochs": null,
+      "acc": 0.997328,
+      "macro_f1": 0.996917,
+      "mca": 0.933478,
+      "relative_drop": 0.064022,
+      "acc_gaussian_blur": 0.95,
+      "acc_gaussian_noise": 0.97235,
+      "acc_darken": 0.976039,
+      "acc_occlusion": 0.849406,
+      "acc_jpeg": 0.919593,
+      "best_epoch": 4,
+      "epochs_run": 9,
+      "train_time_s": 375.6,
+      "trainable_params": 11198571,
+      "params": 11198571
+    },
+    "linear": {
+      "run_name": "resnet18_pretrained_A2_linear",
+      "finetune": "linear",
+      "lr": 0.001,
+      "backbone_lr": null,
+      "freeze_epochs": null,
+      "acc": 0.783969,
+      "macro_f1": 0.722205,
+      "mca": 0.555055,
+      "relative_drop": 0.291994,
+      "acc_gaussian_blur": 0.577863,
+      "acc_gaussian_noise": 0.450636,
+      "acc_darken": 0.734182,
+      "acc_occlusion": 0.459033,
+      "acc_jpeg": 0.553562,
+      "best_epoch": 13,
+      "epochs_run": 18,
+      "train_time_s": 345.5,
+      "trainable_params": 22059,
+      "params": 11198571
+    },
+    "discriminative": {
+      "run_name": "resnet18_pretrained_A2_discriminative",
+      "finetune": "discriminative",
+      "lr": 0.001,
+      "backbone_lr": 0.0001,
+      "freeze_epochs": null,
+      "acc": 0.997328,
+      "macro_f1": 0.994499,
+      "mca": 0.946896,
+      "relative_drop": 0.050568,
+      "acc_gaussian_blur": 0.952927,
+      "acc_gaussian_noise": 0.97765,
+      "acc_darken": 0.994699,
+      "acc_occlusion": 0.898473,
+      "acc_jpeg": 0.910729,
+      "best_epoch": 15,
+      "epochs_run": 20,
+      "train_time_s": 598.6,
+      "trainable_params": 11198571,
+      "params": 11198571
+    },
+    "two_stage": {
+      "run_name": "resnet18_pretrained_A2_two_stage",
+      "finetune": "two_stage",
+      "lr": 0.001,
+      "backbone_lr": 0.0001,
+      "freeze_epochs": 3,
+      "acc": 0.995547,
+      "macro_f1": 0.988788,
+      "mca": 0.938304,
+      "relative_drop": 0.057499,
+      "acc_gaussian_blur": 0.949873,
+      "acc_gaussian_noise": 0.970399,
+      "acc_darken": 0.9933,
+      "acc_occlusion": 0.882655,
+      "acc_jpeg": 0.895293,
+      "best_epoch": 16,
+      "epochs_run": 20,
+      "train_time_s": 552.0,
+      "trainable_params": 11198571,
+      "params": 11198571
+    }
+  },
+  "diff_vs_full": {
+    "linear": {
+      "acc": -0.213359,
+      "macro_f1": -0.274712,
+      "mca": -0.378423,
+      "relative_drop": 0.227972
+    },
+    "discriminative": {
+      "acc": 0.0,
+      "macro_f1": -0.002418,
+      "mca": 0.013418,
+      "relative_drop": -0.013454
+    },
+    "two_stage": {
+      "acc": -0.001781,
+      "macro_f1": -0.008129,
+      "mca": 0.004826,
+      "relative_drop": -0.006523
+    }
+  }
+}
